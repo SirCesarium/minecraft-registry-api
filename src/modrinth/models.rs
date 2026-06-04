@@ -1,5 +1,6 @@
 use serde::Deserialize;
 use serde_json::Value;
+use std::fmt;
 
 #[derive(Debug, Deserialize)]
 pub struct SearchResult {
@@ -138,4 +139,75 @@ pub struct GameVersion {
     pub version_type: String,
     pub date: String,
     pub major: bool,
+}
+
+#[derive(Debug)]
+pub enum Facet {
+    ProjectType(ProjectType),
+    Category(String),
+    Loader(String),
+    GameVersion(String),
+    ClientSide(Side),
+    ServerSide(Side),
+    OpenSource(bool),
+    License(String),
+    Author(String),
+    Custom(String, String),
+}
+
+#[derive(Debug)]
+pub enum ProjectType {
+    Mod,
+    Modpack,
+    Plugin,
+    Datapack,
+    ResourcePack,
+    Shader,
+}
+
+#[derive(Debug)]
+pub enum Side {
+    Required,
+    Optional,
+    Unsupported,
+}
+
+impl fmt::Display for ProjectType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Mod => write!(f, "mod"),
+            Self::Modpack => write!(f, "modpack"),
+            Self::Plugin => write!(f, "plugin"),
+            Self::Datapack => write!(f, "datapack"),
+            Self::ResourcePack => write!(f, "resourcepack"),
+            Self::Shader => write!(f, "shader"),
+        }
+    }
+}
+
+impl fmt::Display for Side {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Required => write!(f, "required"),
+            Self::Optional => write!(f, "optional"),
+            Self::Unsupported => write!(f, "unsupported"),
+        }
+    }
+}
+
+impl fmt::Display for Facet {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::ProjectType(t) => write!(f, "project_type:{t}"),
+            Self::Category(c) => write!(f, "categories:{c}"),
+            Self::Loader(l) => write!(f, "loaders:{l}"),
+            Self::GameVersion(v) => write!(f, "game_versions:{v}"),
+            Self::ClientSide(s) => write!(f, "client_side:{s}"),
+            Self::ServerSide(s) => write!(f, "server_side:{s}"),
+            Self::OpenSource(b) => write!(f, "open_source:{b}"),
+            Self::License(l) => write!(f, "license:{l}"),
+            Self::Author(a) => write!(f, "author:{a}"),
+            Self::Custom(k, v) => write!(f, "{k}:{v}"),
+        }
+    }
 }
