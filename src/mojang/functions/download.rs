@@ -8,7 +8,7 @@ impl MojangClient {
     /// Returns [`ApiError::Http`] if the request fails.
     pub async fn download(&self, hash: &str, file: &str) -> Result<Vec<u8>, ApiError> {
         let url = format!("{OBJECTS_BASE}/{hash}/{file}");
-        let resp = self.client.get(&url).send().await?;
+        let resp = self.client.get(&url).send().await?.error_for_status()?;
 
         let bytes = resp.bytes().await?.to_vec();
 

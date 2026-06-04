@@ -10,7 +10,7 @@ impl MojangClient {
     /// Returns [`ApiError::Http`] if the request or parsing fails.
     pub async fn get_manifest(&self) -> Result<MojangRoot, ApiError> {
         let url = format!("{}{}", self.base_url, MANIFEST_PATH);
-        let resp = self.client.get(&url).send().await?;
+        let resp = self.client.get(&url).send().await?.error_for_status()?;
 
         let manifest = resp.json().await?;
 

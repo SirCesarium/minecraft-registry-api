@@ -35,7 +35,7 @@ impl ModrinthClient {
             serde_json::to_string(&strings).unwrap_or_default()
         });
         let params = SearchParams { query, limit, offset, facets };
-        let resp = self.client.get(&url).query(&params).send().await?;
+        let resp = self.client.get(&url).query(&params).send().await?.error_for_status()?;
         Ok(resp.json().await?)
     }
 }

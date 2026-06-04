@@ -8,7 +8,7 @@ impl PaperClient {
     /// Returns [`ApiError::Http`] if the request or parsing fails.
     pub async fn get_build(&self, project: &str, version: &str, build: i64) -> Result<PaperBuild, ApiError> {
         let url = format!("{BASE}/projects/{project}/versions/{version}/builds/{build}");
-        let resp = self.client.get(&url).send().await?;
+        let resp = self.client.get(&url).send().await?.error_for_status()?;
         Ok(resp.json().await?)
     }
 
@@ -21,7 +21,7 @@ impl PaperClient {
         let build_info = self.get_build(project, version, build).await?;
         let file = &build_info.downloads.application.name;
         let url = format!("{BASE}/projects/{project}/versions/{version}/builds/{build}/downloads/{file}");
-        let resp = self.client.get(&url).send().await?;
+        let resp = self.client.get(&url).send().await?.error_for_status()?;
         Ok(resp.bytes().await?.to_vec())
     }
 }

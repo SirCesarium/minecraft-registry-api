@@ -38,3 +38,50 @@ pub struct Application {
     pub name: String,
     pub sha256: String,
 }
+
+#[cfg(test)]
+#[allow(clippy::unwrap_used)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_paper_project_deserialize() {
+        let json = serde_json::json!({
+            "project_id": "paper",
+            "project_name": "Paper",
+            "version_groups": ["1.21"],
+            "versions": ["1.21.4"]
+        });
+        let p: PaperProject = serde_json::from_value(json).unwrap();
+        assert_eq!(p.project_id, "paper");
+    }
+
+    #[test]
+    fn test_paper_build_deserialize() {
+        let json = serde_json::json!({
+            "project_id": "paper",
+            "project_name": "Paper",
+            "version": "1.21.4",
+            "build": 123,
+            "time": "2024-12-03T13:00:00Z",
+            "channel": "default",
+            "promoted": true,
+            "changes": [{
+                "commit": "abc123",
+                "summary": "Fix bug",
+                "message": "Fix a critical bug"
+            }],
+            "downloads": {
+                "application": {
+                    "name": "paper-1.21.4-123.jar",
+                    "sha256": "deadbeef"
+                }
+            }
+        });
+        let b: PaperBuild = serde_json::from_value(json).unwrap();
+        assert_eq!(b.build, 123);
+        assert!(b.promoted);
+        assert_eq!(b.downloads.application.name, "paper-1.21.4-123.jar");
+        assert_eq!(b.changes[0].commit, "abc123");
+    }
+}

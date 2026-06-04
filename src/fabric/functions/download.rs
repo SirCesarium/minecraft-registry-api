@@ -8,7 +8,7 @@ impl FabricClient {
     /// Returns [`ApiError::Http`] if the request fails.
     pub async fn download_installer(&self, version: &str) -> Result<Vec<u8>, ApiError> {
         let url = format!("https://maven.fabricmc.net/net/fabricmc/fabric-installer/{version}/fabric-installer-{version}.jar");
-        let resp = self.client.get(&url).send().await?;
+        let resp = self.client.get(&url).send().await?.error_for_status()?;
         Ok(resp.bytes().await?.to_vec())
     }
 }

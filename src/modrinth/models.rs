@@ -211,3 +211,193 @@ impl fmt::Display for Facet {
         }
     }
 }
+
+#[cfg(test)]
+#[allow(clippy::unwrap_used)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_search_result_deserialize() {
+        let json = serde_json::json!({
+            "hits": [{
+                "project_id": "A1B2C3D4",
+                "project_type": "mod",
+                "slug": "sodium",
+                "author": "CaffeineMC",
+                "author_id": "abc123",
+                "organization": null,
+                "organization_id": null,
+                "title": "Sodium",
+                "description": "Modern rendering engine",
+                "categories": ["performance"],
+                "display_categories": ["performance"],
+                "versions": ["1.21.4"],
+                "downloads": 1000000,
+                "follows": 50000,
+                "icon_url": "https://example.com/icon.png",
+                "date_created": "2020-01-01T00:00:00Z",
+                "date_modified": "2024-01-01T00:00:00Z",
+                "latest_version": "1.0.0",
+                "license": "MIT",
+                "client_side": "required",
+                "server_side": "required",
+                "gallery": [],
+                "featured_gallery": null,
+                "color": 16733525
+            }],
+            "offset": 0,
+            "limit": 10,
+            "total_hits": 1
+        });
+        let result: SearchResult = serde_json::from_value(json).unwrap();
+        assert_eq!(result.total_hits, 1);
+        assert_eq!(result.hits[0].slug, "sodium");
+        assert_eq!(result.hits[0].project_type, "mod");
+    }
+
+    #[test]
+    fn test_project_deserialize() {
+        let json = serde_json::json!({
+            "client_side": "required",
+            "server_side": "required",
+            "game_versions": ["1.21.4"],
+            "id": "A1B2C3D4",
+            "slug": "sodium",
+            "project_type": "mod",
+            "team": "team123",
+            "organization": null,
+            "title": "Sodium",
+            "description": "desc",
+            "body": "# Sodium\n\nModern",
+            "body_url": null,
+            "published": "2020-01-01T00:00:00Z",
+            "updated": "2024-01-01T00:00:00Z",
+            "approved": "2020-01-01T00:00:00Z",
+            "queued": null,
+            "status": "approved",
+            "requested_status": null,
+            "moderator_message": null,
+            "license": { "id": "MIT", "name": "MIT", "url": null },
+            "downloads": 1000000,
+            "followers": 50000,
+            "categories": ["performance"],
+            "additional_categories": [],
+            "loaders": ["fabric", "quilt"],
+            "versions": ["v1.0.0"],
+            "icon_url": "https://example.com/icon.png",
+            "issues_url": "https://example.com/issues",
+            "source_url": "https://example.com/source",
+            "wiki_url": "",
+            "discord_url": "",
+            "donation_urls": [],
+            "gallery": [],
+            "color": 16733525,
+            "thread_id": "thread123",
+            "monetization_status": "none"
+        });
+        let project: Project = serde_json::from_value(json).unwrap();
+        assert_eq!(project.slug, "sodium");
+        assert_eq!(project.project_type, "mod");
+        assert_eq!(project.loaders, vec!["fabric", "quilt"]);
+        assert_eq!(project.monetization_status, "none");
+    }
+
+    #[test]
+    fn test_version_deserialize() {
+        let json = serde_json::json!({
+            "game_versions": ["1.21.4"],
+            "loaders": ["fabric"],
+            "id": "ver123",
+            "project_id": "proj123",
+            "author_id": "auth123",
+            "featured": false,
+            "name": "Sodium 1.0.0",
+            "version_number": "1.0.0",
+            "changelog": "Initial release",
+            "changelog_url": null,
+            "date_published": "2024-01-01T00:00:00Z",
+            "downloads": 1000,
+            "version_type": "release",
+            "status": "listed",
+            "requested_status": null,
+            "files": [{
+                "id": "file123",
+                "hashes": {
+                    "sha512": "aaaa",
+                    "sha1": "bbbb"
+                },
+                "url": "https://example.com/file.jar",
+                "filename": "sodium-1.0.0.jar",
+                "primary": true,
+                "size": 500000,
+                "file_type": null
+            }],
+            "dependencies": []
+        });
+        let version: Version = serde_json::from_value(json).unwrap();
+        assert_eq!(version.id, "ver123");
+        assert_eq!(version.game_versions, vec!["1.21.4"]);
+        assert_eq!(version.files.len(), 1);
+        assert!(version.files[0].primary);
+    }
+
+    #[test]
+    fn test_loader_deserialize() {
+        let json = serde_json::json!({
+            "icon": "fabric",
+            "name": "Fabric",
+            "supported_project_types": ["mod", "modpack"]
+        });
+        let loader: Loader = serde_json::from_value(json).unwrap();
+        assert_eq!(loader.name, "Fabric");
+    }
+
+    #[test]
+    fn test_game_version_deserialize() {
+        let json = serde_json::json!({
+            "version": "1.21.4",
+            "version_type": "release",
+            "date": "2024-12-03T13:00:00Z",
+            "major": true
+        });
+        let gv: GameVersion = serde_json::from_value(json).unwrap();
+        assert_eq!(gv.version, "1.21.4");
+        assert!(gv.major);
+    }
+
+    #[test]
+    fn test_facet_display() {
+        assert_eq!(
+            Facet::ProjectType(ProjectType::Mod).to_string(),
+            "project_type:mod"
+        );
+        assert_eq!(
+            Facet::ProjectType(ProjectType::Plugin).to_string(),
+            "project_type:plugin"
+        );
+        assert_eq!(
+            Facet::Category("performance".into()).to_string(),
+            "categories:performance"
+        );
+        assert_eq!(Facet::Loader("fabric".into()).to_string(), "loaders:fabric");
+        assert_eq!(
+            Facet::ClientSide(Side::Required).to_string(),
+            "client_side:required"
+        );
+        assert_eq!(
+            Facet::ServerSide(Side::Unsupported).to_string(),
+            "server_side:unsupported"
+        );
+        assert_eq!(Facet::OpenSource(true).to_string(), "open_source:true");
+        assert_eq!(Facet::License("MIT".into()).to_string(), "license:MIT");
+        assert_eq!(
+            Facet::Author("CaffeineMC".into()).to_string(),
+            "author:CaffeineMC"
+        );
+        assert_eq!(
+            Facet::Custom("key".into(), "val".into()).to_string(),
+            "key:val"
+        );
+    }
+}

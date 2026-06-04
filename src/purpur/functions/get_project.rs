@@ -8,7 +8,7 @@ impl PurpurClient {
     /// Returns [`ApiError::Http`] if the request or parsing fails.
     pub async fn get_project(&self) -> Result<PurpurProject, ApiError> {
         let url = format!("{BASE}/purpur");
-        let resp = self.client.get(&url).send().await?;
+        let resp = self.client.get(&url).send().await?.error_for_status()?;
         Ok(resp.json().await?)
     }
 }

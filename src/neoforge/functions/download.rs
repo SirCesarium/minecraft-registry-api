@@ -10,7 +10,7 @@ impl NeoForgeClient {
         let url = format!(
             "https://maven.neoforged.net/releases/net/neoforged/neoforge/{version}/neoforge-{version}-installer.jar"
         );
-        let resp = self.client.get(&url).send().await?;
+        let resp = self.client.get(&url).send().await?.error_for_status()?;
         Ok(resp.bytes().await?.to_vec())
     }
 }

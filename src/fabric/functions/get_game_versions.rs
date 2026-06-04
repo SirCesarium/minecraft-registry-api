@@ -8,7 +8,7 @@ impl FabricClient {
     /// Returns [`ApiError::Http`] if the request or parsing fails.
     pub async fn get_game_versions(&self) -> Result<Vec<FabricGameVersion>, ApiError> {
         let url = format!("{BASE}/versions/game");
-        let resp = self.client.get(&url).send().await?;
+        let resp = self.client.get(&url).send().await?.error_for_status()?;
         Ok(resp.json().await?)
     }
 }

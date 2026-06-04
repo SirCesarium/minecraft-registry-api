@@ -10,7 +10,7 @@ impl ForgeClient {
         let url = format!(
             "https://maven.minecraftforge.net/net/minecraftforge/forge/{mc_version}-{forge_version}/forge-{mc_version}-{forge_version}-installer.jar",
         );
-        let resp = self.client.get(&url).send().await?;
+        let resp = self.client.get(&url).send().await?.error_for_status()?;
         Ok(resp.bytes().await?.to_vec())
     }
 }

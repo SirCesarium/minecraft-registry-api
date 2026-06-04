@@ -9,7 +9,7 @@ impl NeoForgeClient {
     /// Returns [`ApiError::Http`] if the request fails,
     /// or [`ApiError::Xml`] if XML parsing fails.
     pub async fn get_metadata(&self) -> Result<Metadata, ApiError> {
-        let resp = self.client.get(META_URL).send().await?;
+        let resp = self.client.get(META_URL).send().await?.error_for_status()?;
         let bytes = resp.bytes().await?;
         let meta: Metadata = from_reader(&bytes[..]).map_err(|e| ApiError::Xml(e.to_string()))?;
         Ok(meta)

@@ -21,3 +21,28 @@ pub struct Versions {
     #[serde(rename = "version")]
     pub list: Vec<String>,
 }
+
+#[cfg(test)]
+#[allow(clippy::unwrap_used)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_neoforge_metadata_deserialize() {
+        let json = serde_json::json!({
+            "groupId": "net.neoforged",
+            "artifactId": "neoforge",
+            "versioning": {
+                "latest": "21.4.0-beta",
+                "release": "21.4.0-beta",
+                "versions": {
+                    "version": ["21.4.0-beta", "21.3.0"]
+                }
+            }
+        });
+        let m: Metadata = serde_json::from_value(json).unwrap();
+        assert_eq!(m.group_id, "net.neoforged");
+        assert_eq!(m.versioning.latest, "21.4.0-beta");
+        assert_eq!(m.versioning.versions.list.len(), 2);
+    }
+}

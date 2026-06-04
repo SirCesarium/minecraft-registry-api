@@ -8,7 +8,7 @@ impl PaperClient {
     /// Returns [`ApiError::Http`] if the request or parsing fails.
     pub async fn get_project(&self, project: &str) -> Result<PaperProject, ApiError> {
         let url = format!("{BASE}/projects/{project}");
-        let resp = self.client.get(&url).send().await?;
+        let resp = self.client.get(&url).send().await?.error_for_status()?;
         Ok(resp.json().await?)
     }
 }

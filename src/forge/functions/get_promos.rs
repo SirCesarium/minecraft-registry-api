@@ -7,7 +7,7 @@ impl ForgeClient {
     ///
     /// Returns [`ApiError::Http`] if the request or parsing fails.
     pub async fn get_promos(&self) -> Result<ForgePromos, ApiError> {
-        let resp = self.client.get(PROMO_URL).send().await?;
+        let resp = self.client.get(PROMO_URL).send().await?.error_for_status()?;
         Ok(resp.json().await?)
     }
 }

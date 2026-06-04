@@ -8,7 +8,7 @@ impl ModrinthClient {
     /// Returns [`ApiError::Http`] if the request or parsing fails.
     pub async fn get_project(&self, slug: &str) -> Result<Project, ApiError> {
         let url = format!("{BASE}/project/{slug}");
-        let resp = self.client.get(&url).send().await?;
+        let resp = self.client.get(&url).send().await?.error_for_status()?;
         Ok(resp.json().await?)
     }
 }
