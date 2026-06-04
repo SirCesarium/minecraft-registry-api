@@ -3,3 +3,5 @@ pub mod error;
 pub mod modrinth;
 #[cfg(feature = "mojang")]
 pub mod mojang;
+#[cfg(feature = "paper")]
+pub mod paper;
