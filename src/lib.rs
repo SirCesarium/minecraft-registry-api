@@ -5,3 +5,5 @@ pub mod modrinth;
 pub mod mojang;
 #[cfg(feature = "paper")]
 pub mod paper;
+#[cfg(feature = "purpur")]
+pub mod purpur;
