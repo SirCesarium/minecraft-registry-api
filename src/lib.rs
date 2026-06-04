@@ -11,3 +11,5 @@ pub mod purpur;
 pub mod fabric;
 #[cfg(feature = "forge")]
 pub mod forge;
+#[cfg(feature = "neoforge")]
+pub mod neoforge;
