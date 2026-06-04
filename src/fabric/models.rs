@@ -14,3 +14,11 @@ pub struct FabricLoaderVersion {
     pub version: String,
     pub stable: bool,
 }
+
+#[derive(Debug, Deserialize)]
+pub struct FabricInstallerVersion {
+    pub url: String,
+    pub maven: String,
+    pub version: String,
+    pub stable: bool,
+}
