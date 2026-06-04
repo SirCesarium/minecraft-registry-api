@@ -1,12 +1,12 @@
-use crate::{error::MojangError, mojang::{MojangClient, OBJECTS_BASE}};
+use crate::{error::ApiError, mojang::{MojangClient, OBJECTS_BASE}};
 
 impl MojangClient {
     /// Downloads a file by its hash (e.g. server jar, assets).
     ///
     /// # Errors
     ///
-    /// Returns [`MojangError::Http`] if the request fails.
-    pub async fn download(&self, hash: &str, file: &str) -> Result<Vec<u8>, MojangError> {
+    /// Returns [`ApiError::Http`] if the request fails.
+    pub async fn download(&self, hash: &str, file: &str) -> Result<Vec<u8>, ApiError> {
         let url = format!("{OBJECTS_BASE}/{hash}/{file}");
         let resp = self.client.get(&url).send().await?;
 

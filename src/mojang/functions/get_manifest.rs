@@ -1,4 +1,4 @@
-use crate::{error::MojangError, mojang::{MojangClient, models::MojangRoot}};
+use crate::{error::ApiError, mojang::{MojangClient, models::MojangRoot}};
 
 const MANIFEST_PATH: &str = "/mc/game/version_manifest_v2.json";
 
@@ -7,8 +7,8 @@ impl MojangClient {
     ///
     /// # Errors
     ///
-    /// Returns [`MojangError::Http`] if the request or parsing fails.
-    pub async fn get_manifest(&self) -> Result<MojangRoot, MojangError> {
+    /// Returns [`ApiError::Http`] if the request or parsing fails.
+    pub async fn get_manifest(&self) -> Result<MojangRoot, ApiError> {
         let url = format!("{}{}", self.base_url, MANIFEST_PATH);
         let resp = self.client.get(&url).send().await?;
 
