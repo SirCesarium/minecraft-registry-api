@@ -9,3 +9,5 @@ pub mod paper;
 pub mod purpur;
 #[cfg(feature = "fabric")]
 pub mod fabric;
+#[cfg(feature = "forge")]
+pub mod forge;
