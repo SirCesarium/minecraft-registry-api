@@ -7,3 +7,5 @@ pub mod mojang;
 pub mod paper;
 #[cfg(feature = "purpur")]
 pub mod purpur;
+#[cfg(feature = "fabric")]
+pub mod fabric;
