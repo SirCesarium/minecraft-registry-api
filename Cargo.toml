@@ -26,6 +26,7 @@ neoforge = ["quick-xml"]
 [lib]
 name = "minecraft_registry_api"
 path = "src/lib.rs"
+crate-type = ["lib", "cdylib", "staticlib"]
 
 [lints.clippy]
 all = "deny"

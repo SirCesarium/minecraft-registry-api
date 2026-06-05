@@ -1,0 +1,68 @@
+version = 1
+platform = "github"
+lang = "rust"
+toolchain = "stable"
+
+[[artifacts]]
+type = "lib"
+name = "minecraft_registry_api"
+outputName = "{name}-{os}-{arch}"
+headers = true
+
+# --- LINUX ---
+[[targets]]
+id = "linux-gnu"
+for = "minecraft_registry_api"
+os = "linux"
+arch = ["x86_64", "arm64"]
+abi = "gnu"
+type = "lib"
+headers = true
+packages = ["tar.gz"]
+
+[[targets]]
+id = "linux-musl"
+for = "minecraft_registry_api"
+os = "linux"
+arch = ["x86_64", "arm64"]
+abi = "musl"
+type = "lib"
+headers = true
+packages = ["tar.gz"]
+
+# --- WINDOWS ---
+[[targets]]
+id = "windows-msvc"
+for = "minecraft_registry_api"
+os = "windows"
+arch = ["x86_64", "arm64"]
+abi = "msvc"
+type = "lib"
+packages = ["zip"]
+
+# --- MACOS ---
+[[targets]]
+id = "macos"
+for = "minecraft_registry_api"
+os = "macos"
+arch = ["arm64", "x86_64"]
+type = "lib"
+packages = ["tar.gz"]
+
+# --- PUBLISH ---
+[[publish]]
+type = "builtin"
+builtin = "download_artifact"
+targets = "all"
+
+[[publish]]
+type = "builtin"
+builtin = "github_release"
+targets = "all"
+
+[[publish]]
+type = "composite"
+name = "Publish to crates.io"
+action = "cargo-publish"
+secrets = ["CRATES_TOKEN"]
+targets = "once"
