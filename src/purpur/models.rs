@@ -1,5 +1,16 @@
 use serde::Deserialize;
 
+#[derive(Debug)]
+pub struct VersionQuery<'a> {
+    pub version: &'a str,
+}
+
+#[derive(Debug)]
+pub struct BuildDownload<'a> {
+    pub version: &'a str,
+    pub build: &'a str,
+}
+
 #[derive(Debug, Deserialize)]
 pub struct PurpurProject {
     pub project: String,

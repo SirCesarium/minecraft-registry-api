@@ -1,5 +1,24 @@
 use serde::Deserialize;
 
+#[derive(Debug)]
+pub struct ProjectQuery<'a> {
+    pub project: &'a str,
+}
+
+#[derive(Debug)]
+pub struct BuildQuery<'a> {
+    pub project: &'a str,
+    pub version: &'a str,
+    pub build: i64,
+}
+
+#[derive(Debug)]
+pub struct BuildDownload<'a> {
+    pub project: &'a str,
+    pub version: &'a str,
+    pub build: i64,
+}
+
 #[derive(Debug, Deserialize)]
 pub struct PaperProject {
     pub project_id: String,

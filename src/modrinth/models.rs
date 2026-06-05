@@ -142,6 +142,29 @@ pub struct GameVersion {
 }
 
 #[derive(Debug)]
+pub struct SearchQuery<'a> {
+    pub query: &'a str,
+    pub limit: u32,
+    pub offset: u32,
+    pub facets: Option<Vec<Vec<Facet>>>,
+}
+
+#[derive(Debug)]
+pub struct ProjectRef<'a> {
+    pub slug: &'a str,
+}
+
+#[derive(Debug)]
+pub struct VersionListQuery<'a> {
+    pub project_id: &'a str,
+}
+
+#[derive(Debug)]
+pub struct VersionQuery<'a> {
+    pub version_id: &'a str,
+}
+
+#[derive(Debug)]
 pub enum Facet {
     ProjectType(ProjectType),
     Category(String),
@@ -233,8 +256,8 @@ mod tests {
                 "categories": ["performance"],
                 "display_categories": ["performance"],
                 "versions": ["1.21.4"],
-                "downloads": 1000000,
-                "follows": 50000,
+                "downloads": 1_000_000,
+                "follows": 50_000,
                 "icon_url": "https://example.com/icon.png",
                 "date_created": "2020-01-01T00:00:00Z",
                 "date_modified": "2024-01-01T00:00:00Z",
@@ -244,7 +267,7 @@ mod tests {
                 "server_side": "required",
                 "gallery": [],
                 "featured_gallery": null,
-                "color": 16733525
+                "color": 16_733_525
             }],
             "offset": 0,
             "limit": 10,
@@ -279,8 +302,8 @@ mod tests {
             "requested_status": null,
             "moderator_message": null,
             "license": { "id": "MIT", "name": "MIT", "url": null },
-            "downloads": 1000000,
-            "followers": 50000,
+            "downloads": 1_000_000,
+            "followers": 50_000,
             "categories": ["performance"],
             "additional_categories": [],
             "loaders": ["fabric", "quilt"],
@@ -292,7 +315,7 @@ mod tests {
             "discord_url": "",
             "donation_urls": [],
             "gallery": [],
-            "color": 16733525,
+            "color": 16_733_525,
             "thread_id": "thread123",
             "monetization_status": "none"
         });
@@ -330,7 +353,7 @@ mod tests {
                 "url": "https://example.com/file.jar",
                 "filename": "sodium-1.0.0.jar",
                 "primary": true,
-                "size": 500000,
+                "size": 500_000,
                 "file_type": null
             }],
             "dependencies": []

@@ -1,7 +1,7 @@
 use reqwest::Client;
 
 mod functions;
-mod models;
+pub mod models;
 
 const META_BASE: &str = "https://piston-meta.mojang.com";
 const OBJECTS_BASE: &str = "https://piston-data.mojang.com/v1/objects";

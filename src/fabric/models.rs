@@ -1,5 +1,10 @@
 use serde::Deserialize;
 
+#[derive(Debug)]
+pub struct InstallerQuery<'a> {
+    pub version: &'a str,
+}
+
 #[derive(Debug, Deserialize)]
 pub struct FabricGameVersion {
     pub version: String,

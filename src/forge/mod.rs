@@ -1,7 +1,7 @@
 use reqwest::Client;
 
 mod functions;
-mod models;
+pub mod models;
 
 pub(crate) const PROMO_URL: &str = "https://files.minecraftforge.net/net/minecraftforge/forge/promotions_slim.json";
 

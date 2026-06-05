@@ -1,4 +1,4 @@
-use crate::{error::ApiError, mojang::{MojangClient, OBJECTS_BASE}};
+use crate::{error::ApiError, mojang::{MojangClient, OBJECTS_BASE, models::DownloadSpec}};
 
 impl MojangClient {
     /// Downloads a file by its hash (e.g. server jar, assets).
@@ -6,8 +6,8 @@ impl MojangClient {
     /// # Errors
     ///
     /// Returns [`ApiError::Http`] if the request fails.
-    pub async fn download(&self, hash: &str, file: &str) -> Result<Vec<u8>, ApiError> {
-        let url = format!("{OBJECTS_BASE}/{hash}/{file}");
+    pub async fn download(&self, params: DownloadSpec<'_>) -> Result<Vec<u8>, ApiError> {
+        let url = format!("{OBJECTS_BASE}/{}/{}", params.hash, params.file);
         let resp = self.client.get(&url).send().await?.error_for_status()?;
 
         let bytes = resp.bytes().await?.to_vec();
@@ -17,7 +17,7 @@ impl MojangClient {
 }
 
 #[cfg(test)]
-#[allow(clippy::unwrap_used)]
+#[allow(clippy::unwrap_used, clippy::expect_used)]
 mod tests {
     use super::*;
     use reqwest::Client;
@@ -41,7 +41,7 @@ mod tests {
         let url = server["url"].as_str().unwrap();
         let file = url.rsplit('/').next().unwrap();
 
-        let jar = client.download(hash, file).await.unwrap();
+        let jar = client.download(DownloadSpec { hash, file }).await.unwrap();
         assert!(jar.len() > 1_000_000);
     }
 }

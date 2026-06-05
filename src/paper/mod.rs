@@ -1,7 +1,7 @@
 use reqwest::Client;
 
 mod functions;
-mod models;
+pub mod models;
 
 pub(crate) const BASE: &str = "https://api.papermc.io/v2";
 

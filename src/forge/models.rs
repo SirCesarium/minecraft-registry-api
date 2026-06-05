@@ -1,6 +1,12 @@
 use serde::Deserialize;
 use std::collections::HashMap;
 
+#[derive(Debug)]
+pub struct InstallerQuery<'a> {
+    pub mc_version: &'a str,
+    pub forge_version: &'a str,
+}
+
 #[derive(Debug, Deserialize)]
 pub struct ForgePromos {
     pub promos: HashMap<String, String>,

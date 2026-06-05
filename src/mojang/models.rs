@@ -1,5 +1,11 @@
 use serde::Deserialize;
 
+#[derive(Debug)]
+pub struct DownloadSpec<'a> {
+    pub hash: &'a str,
+    pub file: &'a str,
+}
+
 #[derive(Debug, Deserialize)]
 pub struct MojangRoot {
     pub latest: Latest,

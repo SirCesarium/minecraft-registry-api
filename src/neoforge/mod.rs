@@ -1,7 +1,7 @@
 use reqwest::Client;
 
 mod functions;
-mod models;
+pub mod models;
 
 pub(crate) const META_URL: &str = "https://maven.neoforged.net/releases/net/neoforged/neoforge/maven-metadata.xml";
 
