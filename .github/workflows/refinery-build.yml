@@ -22,7 +22,7 @@ jobs:
             os: linux
             arch: x86_64
             runs_on: ubuntu-24.04
-            output_name: minecraft_registry_api-linux-x86_64
+            output_name: minecraft_registry_api-linux-x86_64-gnu
             artifact_bin: minecraft_registry_api
             target_triple: x86_64-unknown-linux-gnu
             packages:
@@ -35,7 +35,7 @@ jobs:
             include_files: []
             apt_packages: []
             bin_ext: ""
-            headers: false
+            headers: true
             linker_env: []
             features: []
             features_str: ""
@@ -46,7 +46,7 @@ jobs:
             os: linux
             arch: arm64
             runs_on: ubuntu-24.04-arm
-            output_name: minecraft_registry_api-linux-arm64
+            output_name: minecraft_registry_api-linux-arm64-gnu
             artifact_bin: minecraft_registry_api
             target_triple: aarch64-unknown-linux-gnu
             packages:
@@ -60,7 +60,7 @@ jobs:
             apt_packages:
               - gcc-aarch64-linux-gnu
             bin_ext: ""
-            headers: false
+            headers: true
             linker: aarch64-linux-gnu-gcc
             linker_env:
               - CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=aarch64-linux-gnu-gcc
@@ -73,7 +73,7 @@ jobs:
             os: linux
             arch: x86_64
             runs_on: ubuntu-24.04
-            output_name: minecraft_registry_api-linux-x86_64
+            output_name: minecraft_registry_api-linux-x86_64-musl
             artifact_bin: minecraft_registry_api
             target_triple: x86_64-unknown-linux-musl
             packages:
@@ -87,7 +87,7 @@ jobs:
             apt_packages:
               - musl-tools
             bin_ext: ""
-            headers: false
+            headers: true
             linker_env:
               - CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_LINKER=musl-gcc
             features: []
@@ -99,7 +99,7 @@ jobs:
             os: linux
             arch: arm64
             runs_on: ubuntu-24.04-arm
-            output_name: minecraft_registry_api-linux-arm64
+            output_name: minecraft_registry_api-linux-arm64-musl
             artifact_bin: minecraft_registry_api
             target_triple: aarch64-unknown-linux-musl
             packages:
@@ -114,7 +114,7 @@ jobs:
               - gcc-aarch64-linux-gnu
               - musl-tools
             bin_ext: ""
-            headers: false
+            headers: true
             linker: aarch64-linux-gnu-gcc
             linker_env:
               - CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_LINKER=aarch64-linux-gnu-gcc
@@ -127,7 +127,7 @@ jobs:
             os: windows
             arch: x86_64
             runs_on: windows-2025
-            output_name: minecraft_registry_api-windows-x86_64
+            output_name: minecraft_registry_api-windows-x86_64-msvc
             artifact_bin: minecraft_registry_api
             target_triple: x86_64-pc-windows-msvc
             packages:
@@ -140,7 +140,7 @@ jobs:
             include_files: []
             apt_packages: []
             bin_ext: .exe
-            headers: false
+            headers: true
             linker_env: []
             features: []
             features_str: ""
@@ -151,7 +151,7 @@ jobs:
             os: windows
             arch: arm64
             runs_on: windows-11-arm
-            output_name: minecraft_registry_api-windows-arm64
+            output_name: minecraft_registry_api-windows-arm64-msvc
             artifact_bin: minecraft_registry_api
             target_triple: aarch64-pc-windows-msvc
             packages:
@@ -164,7 +164,7 @@ jobs:
             include_files: []
             apt_packages: []
             bin_ext: .exe
-            headers: false
+            headers: true
             linker_env: []
             features: []
             features_str: ""
@@ -188,7 +188,7 @@ jobs:
             include_files: []
             apt_packages: []
             bin_ext: ""
-            headers: false
+            headers: true
             linker_env: []
             features: []
             features_str: ""
@@ -211,7 +211,7 @@ jobs:
             include_files: []
             apt_packages: []
             bin_ext: ""
-            headers: false
+            headers: true
             linker_env: []
             features: []
             features_str: ""

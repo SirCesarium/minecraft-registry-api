@@ -6,7 +6,7 @@ toolchain = "stable"
 [[artifacts]]
 type = "lib"
 name = "minecraft_registry_api"
-outputName = "{name}-{os}-{arch}"
+outputName = "{name}-{os}-{arch}-{abi}"
 headers = true
 
 # --- LINUX ---
