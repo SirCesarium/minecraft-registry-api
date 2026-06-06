@@ -13,3 +13,5 @@ pub mod fabric;
 pub mod forge;
 #[cfg(feature = "neoforge")]
 pub mod neoforge;
+
+pub mod ffi;
