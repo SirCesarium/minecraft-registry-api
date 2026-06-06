@@ -17,7 +17,6 @@ os = "linux"
 arch = ["x86_64", "arm64"]
 abi = "gnu"
 type = "lib"
-headers = true
 packages = ["tar.gz"]
 
 [[targets]]
@@ -27,7 +26,6 @@ os = "linux"
 arch = ["x86_64", "arm64"]
 abi = "musl"
 type = "lib"
-headers = true
 packages = ["tar.gz"]
 
 # --- WINDOWS ---

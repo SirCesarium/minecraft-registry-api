@@ -35,7 +35,7 @@ jobs:
             include_files: []
             apt_packages: []
             bin_ext: ""
-            headers: true
+            headers: false
             linker_env: []
             features: []
             features_str: ""
@@ -60,7 +60,7 @@ jobs:
             apt_packages:
               - gcc-aarch64-linux-gnu
             bin_ext: ""
-            headers: true
+            headers: false
             linker: aarch64-linux-gnu-gcc
             linker_env:
               - CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=aarch64-linux-gnu-gcc
@@ -87,7 +87,7 @@ jobs:
             apt_packages:
               - musl-tools
             bin_ext: ""
-            headers: true
+            headers: false
             linker_env:
               - CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_LINKER=musl-gcc
             features: []
@@ -114,7 +114,7 @@ jobs:
               - gcc-aarch64-linux-gnu
               - musl-tools
             bin_ext: ""
-            headers: true
+            headers: false
             linker: aarch64-linux-gnu-gcc
             linker_env:
               - CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_LINKER=aarch64-linux-gnu-gcc
