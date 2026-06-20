@@ -1,4 +1,10 @@
-use crate::{error::ApiError, modrinth::{ModrinthClient, BASE, models::{Project, ProjectRef}}};
+use crate::{
+    error::ApiError,
+    modrinth::{
+        BASE, ModrinthClient,
+        models::{Project, ProjectRef},
+    },
+};
 
 impl ModrinthClient {
     /// Fetches a project by slug or ID.
@@ -23,7 +29,10 @@ mod tests {
     #[tokio::test]
     async fn test_get_project() {
         let client = ModrinthClient::new(Client::new());
-        let project = client.get_project(ProjectRef { slug: "fabric-api" }).await.unwrap();
+        let project = client
+            .get_project(ProjectRef { slug: "fabric-api" })
+            .await
+            .unwrap();
         assert_eq!(project.slug, "fabric-api");
     }
 }

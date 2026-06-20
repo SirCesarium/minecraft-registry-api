@@ -1,2 +1,2 @@
-pub mod get_manifest;
 pub mod download;
+pub mod get_manifest;

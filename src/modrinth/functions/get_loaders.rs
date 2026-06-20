@@ -1,4 +1,7 @@
-use crate::{error::ApiError, modrinth::{ModrinthClient, BASE, models::Loader}};
+use crate::{
+    error::ApiError,
+    modrinth::{BASE, ModrinthClient, models::Loader},
+};
 
 impl ModrinthClient {
     /// Fetches all available mod loaders.

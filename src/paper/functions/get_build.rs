@@ -1,4 +1,10 @@
-use crate::{error::ApiError, paper::{PaperClient, BASE, models::{PaperBuild, BuildQuery, BuildDownload}}};
+use crate::{
+    error::ApiError,
+    paper::{
+        BASE, PaperClient,
+        models::{BuildDownload, BuildQuery, PaperBuild},
+    },
+};
 
 impl PaperClient {
     /// Fetches a specific build from `PaperMC` API.
@@ -7,7 +13,10 @@ impl PaperClient {
     ///
     /// Returns [`ApiError::Http`] if the request or parsing fails.
     pub async fn get_build(&self, params: BuildQuery<'_>) -> Result<PaperBuild, ApiError> {
-        let url = format!("{BASE}/projects/{}/versions/{}/builds/{}", params.project, params.version, params.build);
+        let url = format!(
+            "{BASE}/projects/{}/versions/{}/builds/{}",
+            params.project, params.version, params.build
+        );
         let resp = self.client.get(&url).send().await?.error_for_status()?;
         Ok(resp.json().await?)
     }
@@ -18,11 +27,54 @@ impl PaperClient {
     ///
     /// Returns [`ApiError::Http`] if the request or parsing fails.
     pub async fn download_build(&self, params: BuildDownload<'_>) -> Result<Vec<u8>, ApiError> {
-        let build_info = self.get_build(BuildQuery { project: params.project, version: params.version, build: params.build }).await?;
+        let build_info = self
+            .get_build(BuildQuery {
+                project: params.project,
+                version: params.version,
+                build: params.build,
+            })
+            .await?;
         let file = &build_info.downloads.application.name;
-        let url = format!("{BASE}/projects/{}/versions/{}/builds/{}/downloads/{}", params.project, params.version, params.build, file);
+        let url = format!(
+            "{BASE}/projects/{}/versions/{}/builds/{}/downloads/{}",
+            params.project, params.version, params.build, file
+        );
         let resp = self.client.get(&url).send().await?.error_for_status()?;
         Ok(resp.bytes().await?.to_vec())
+    }
+
+    /// Downloads a build artifact, calling `on_chunk` for each received chunk.
+    ///
+    /// Returns `(content_length, total_bytes_downloaded)`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ApiError::Http`] if the request or parsing fails.
+    pub async fn download_build_to<F: FnMut(&[u8])>(
+        &self,
+        params: BuildDownload<'_>,
+        mut on_chunk: F,
+    ) -> Result<(Option<u64>, u64), ApiError> {
+        let build_info = self
+            .get_build(BuildQuery {
+                project: params.project,
+                version: params.version,
+                build: params.build,
+            })
+            .await?;
+        let file = &build_info.downloads.application.name;
+        let url = format!(
+            "{BASE}/projects/{}/versions/{}/builds/{}/downloads/{}",
+            params.project, params.version, params.build, file
+        );
+        let mut resp = self.client.get(&url).send().await?.error_for_status()?;
+        let total = resp.content_length();
+        let mut downloaded = 0u64;
+        while let Some(chunk) = resp.chunk().await? {
+            on_chunk(&chunk);
+            downloaded += chunk.len() as u64;
+        }
+        Ok((total, downloaded))
     }
 }
 
@@ -36,7 +88,14 @@ mod tests {
     #[tokio::test]
     async fn test_get_build() {
         let client = PaperClient::new(Client::new());
-        let b = client.get_build(BuildQuery { project: "paper", version: "1.21.4", build: 232 }).await.unwrap();
+        let b = client
+            .get_build(BuildQuery {
+                project: "paper",
+                version: "1.21.4",
+                build: 232,
+            })
+            .await
+            .unwrap();
         assert_eq!(b.build, 232);
     }
 }

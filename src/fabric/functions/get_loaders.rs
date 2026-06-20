@@ -1,4 +1,7 @@
-use crate::{error::ApiError, fabric::{FabricClient, BASE, models::FabricLoaderVersion}};
+use crate::{
+    error::ApiError,
+    fabric::{BASE, FabricClient, models::FabricLoaderVersion},
+};
 
 impl FabricClient {
     /// Fetches available Fabric loader versions.

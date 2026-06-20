@@ -1,4 +1,7 @@
-use crate::{error::ApiError, neoforge::{NeoForgeClient, META_URL, models::Metadata}};
+use crate::{
+    error::ApiError,
+    neoforge::{META_URL, NeoForgeClient, models::Metadata},
+};
 use quick_xml::de::from_reader;
 
 impl NeoForgeClient {

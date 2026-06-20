@@ -1,4 +1,7 @@
-use crate::{error::ApiError, modrinth::{ModrinthClient, BASE, models::GameVersion}};
+use crate::{
+    error::ApiError,
+    modrinth::{BASE, ModrinthClient, models::GameVersion},
+};
 
 impl ModrinthClient {
     /// Fetches all available game versions.

@@ -1,4 +1,7 @@
-use crate::{error::ApiError, mojang::{MojangClient, OBJECTS_BASE, models::DownloadSpec}};
+use crate::{
+    error::ApiError,
+    mojang::{MojangClient, OBJECTS_BASE, models::DownloadSpec},
+};
 
 impl MojangClient {
     /// Downloads a file by its hash (e.g. server jar, assets).
@@ -13,6 +16,29 @@ impl MojangClient {
         let bytes = resp.bytes().await?.to_vec();
 
         Ok(bytes)
+    }
+
+    /// Downloads a file by its hash, calling `on_chunk` for each received chunk.
+    ///
+    /// Returns `(content_length, total_bytes_downloaded)`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ApiError::Http`] if the request fails.
+    pub async fn download_to<F: FnMut(&[u8])>(
+        &self,
+        params: DownloadSpec<'_>,
+        mut on_chunk: F,
+    ) -> Result<(Option<u64>, u64), ApiError> {
+        let url = format!("{OBJECTS_BASE}/{}/{}", params.hash, params.file);
+        let mut resp = self.client.get(&url).send().await?.error_for_status()?;
+        let total = resp.content_length();
+        let mut downloaded = 0u64;
+        while let Some(chunk) = resp.chunk().await? {
+            on_chunk(&chunk);
+            downloaded += chunk.len() as u64;
+        }
+        Ok((total, downloaded))
     }
 }
 

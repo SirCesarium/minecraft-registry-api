@@ -1,4 +1,10 @@
-use crate::{error::ApiError, purpur::{PurpurClient, BASE, models::{PurpurVersion, VersionQuery, BuildDownload}}};
+use crate::{
+    error::ApiError,
+    purpur::{
+        BASE, PurpurClient,
+        models::{BuildDownload, PurpurVersion, VersionQuery},
+    },
+};
 
 impl PurpurClient {
     /// Fetches version info with build list from Purpur API.
@@ -22,6 +28,29 @@ impl PurpurClient {
         let resp = self.client.get(&url).send().await?.error_for_status()?;
         Ok(resp.bytes().await?.to_vec())
     }
+
+    /// Downloads a specific build of Purpur, calling `on_chunk` for each received chunk.
+    ///
+    /// Returns `(content_length, total_bytes_downloaded)`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ApiError::Http`] if the request or parsing fails.
+    pub async fn download_build_to<F: FnMut(&[u8])>(
+        &self,
+        params: BuildDownload<'_>,
+        mut on_chunk: F,
+    ) -> Result<(Option<u64>, u64), ApiError> {
+        let url = format!("{BASE}/purpur/{}/{}", params.version, params.build);
+        let mut resp = self.client.get(&url).send().await?.error_for_status()?;
+        let total = resp.content_length();
+        let mut downloaded = 0u64;
+        while let Some(chunk) = resp.chunk().await? {
+            on_chunk(&chunk);
+            downloaded += chunk.len() as u64;
+        }
+        Ok((total, downloaded))
+    }
 }
 
 #[cfg(test)]
@@ -34,7 +63,10 @@ mod tests {
     #[tokio::test]
     async fn test_get_purpur_version() {
         let client = PurpurClient::new(Client::new());
-        let v = client.get_version(VersionQuery { version: "1.21.4" }).await.unwrap();
+        let v = client
+            .get_version(VersionQuery { version: "1.21.4" })
+            .await
+            .unwrap();
         assert_eq!(v.version, "1.21.4");
     }
 }

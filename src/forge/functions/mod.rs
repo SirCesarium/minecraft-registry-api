@@ -1,2 +1,2 @@
-pub mod get_promos;
 pub mod download;
+pub mod get_promos;

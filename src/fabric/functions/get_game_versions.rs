@@ -1,4 +1,7 @@
-use crate::{error::ApiError, fabric::{FabricClient, BASE, models::FabricGameVersion}};
+use crate::{
+    error::ApiError,
+    fabric::{BASE, FabricClient, models::FabricGameVersion},
+};
 
 impl FabricClient {
     /// Fetches available Minecraft game versions from Fabric meta.

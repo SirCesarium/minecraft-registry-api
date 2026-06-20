@@ -1,4 +1,7 @@
-use crate::{error::ApiError, forge::{ForgeClient, PROMO_URL, models::ForgePromos}};
+use crate::{
+    error::ApiError,
+    forge::{ForgeClient, PROMO_URL, models::ForgePromos},
+};
 
 impl ForgeClient {
     /// Fetches Forge promotions JSON with latest versions per MC version.
@@ -7,7 +10,12 @@ impl ForgeClient {
     ///
     /// Returns [`ApiError::Http`] if the request or parsing fails.
     pub async fn get_promos(&self) -> Result<ForgePromos, ApiError> {
-        let resp = self.client.get(PROMO_URL).send().await?.error_for_status()?;
+        let resp = self
+            .client
+            .get(PROMO_URL)
+            .send()
+            .await?
+            .error_for_status()?;
         Ok(resp.json().await?)
     }
 }

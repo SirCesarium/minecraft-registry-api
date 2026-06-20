@@ -3,7 +3,8 @@ use reqwest::Client;
 mod functions;
 pub mod models;
 
-pub(crate) const PROMO_URL: &str = "https://files.minecraftforge.net/net/minecraftforge/forge/promotions_slim.json";
+pub(crate) const PROMO_URL: &str =
+    "https://files.minecraftforge.net/net/minecraftforge/forge/promotions_slim.json";
 
 pub struct ForgeClient {
     client: Client,

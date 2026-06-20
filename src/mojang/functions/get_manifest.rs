@@ -1,4 +1,7 @@
-use crate::{error::ApiError, mojang::{MojangClient, models::MojangRoot}};
+use crate::{
+    error::ApiError,
+    mojang::{MojangClient, models::MojangRoot},
+};
 
 const MANIFEST_PATH: &str = "/mc/game/version_manifest_v2.json";
 

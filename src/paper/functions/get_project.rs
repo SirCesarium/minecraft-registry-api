@@ -1,4 +1,10 @@
-use crate::{error::ApiError, paper::{PaperClient, BASE, models::{PaperProject, ProjectQuery}}};
+use crate::{
+    error::ApiError,
+    paper::{
+        BASE, PaperClient,
+        models::{PaperProject, ProjectQuery},
+    },
+};
 
 impl PaperClient {
     /// Fetches project information from `PaperMC` API.
@@ -23,7 +29,10 @@ mod tests {
     #[tokio::test]
     async fn test_get_paper() {
         let client = PaperClient::new(Client::new());
-        let p = client.get_project(ProjectQuery { project: "paper" }).await.unwrap();
+        let p = client
+            .get_project(ProjectQuery { project: "paper" })
+            .await
+            .unwrap();
         assert_eq!(p.project_id, "paper");
     }
 }

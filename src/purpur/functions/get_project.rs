@@ -1,4 +1,7 @@
-use crate::{error::ApiError, purpur::{PurpurClient, BASE, models::PurpurProject}};
+use crate::{
+    error::ApiError,
+    purpur::{BASE, PurpurClient, models::PurpurProject},
+};
 
 impl PurpurClient {
     /// Fetches Purpur project info and available versions.
