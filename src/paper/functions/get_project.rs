@@ -7,7 +7,7 @@ use crate::{
 };
 
 impl PaperClient {
-    /// Fetches project information from `PaperMC` API.
+    /// Fetches project information from `PaperMC` Fill v3 API.
     ///
     /// # Errors
     ///
@@ -33,6 +33,6 @@ mod tests {
             .get_project(ProjectQuery { project: "paper" })
             .await
             .unwrap();
-        assert_eq!(p.project_id, "paper");
+        assert_eq!(p.project.id, "paper");
     }
 }

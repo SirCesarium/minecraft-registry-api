@@ -3,7 +3,7 @@ use reqwest::Client;
 mod functions;
 pub mod models;
 
-pub(crate) const BASE: &str = "https://api.papermc.io/v2";
+pub(crate) const BASE: &str = "https://fill.papermc.io/v3";
 
 pub struct PaperClient {
     client: Client,

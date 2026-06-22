@@ -7,7 +7,7 @@ use crate::{
 };
 
 impl PaperClient {
-    /// Fetches a specific build from `PaperMC` API.
+    /// Fetches a specific build from `PaperMC` Fill v3 API.
     ///
     /// # Errors
     ///
@@ -21,7 +21,7 @@ impl PaperClient {
         Ok(resp.json().await?)
     }
 
-    /// Downloads a build artifact from `PaperMC` API.
+    /// Downloads a build artifact from `PaperMC` Fill v3 API.
     ///
     /// # Errors
     ///
@@ -34,12 +34,11 @@ impl PaperClient {
                 build: params.build,
             })
             .await?;
-        let file = &build_info.downloads.application.name;
-        let url = format!(
-            "{BASE}/projects/{}/versions/{}/builds/{}/downloads/{}",
-            params.project, params.version, params.build, file
-        );
-        let resp = self.client.get(&url).send().await?.error_for_status()?;
+        let file = build_info
+            .downloads
+            .get("server:default")
+            .ok_or_else(|| ApiError::from("server:default download not found".to_string()))?;
+        let resp = self.client.get(&file.url).send().await?.error_for_status()?;
         Ok(resp.bytes().await?.to_vec())
     }
 
@@ -62,12 +61,11 @@ impl PaperClient {
                 build: params.build,
             })
             .await?;
-        let file = &build_info.downloads.application.name;
-        let url = format!(
-            "{BASE}/projects/{}/versions/{}/builds/{}/downloads/{}",
-            params.project, params.version, params.build, file
-        );
-        let mut resp = self.client.get(&url).send().await?.error_for_status()?;
+        let file = build_info
+            .downloads
+            .get("server:default")
+            .ok_or_else(|| ApiError::from("server:default download not found".to_string()))?;
+        let mut resp = self.client.get(&file.url).send().await?.error_for_status()?;
         let total = resp.content_length();
         let mut downloaded = 0u64;
         while let Some(chunk) = resp.chunk().await? {
@@ -96,6 +94,6 @@ mod tests {
             })
             .await
             .unwrap();
-        assert_eq!(b.build, 232);
+        assert_eq!(b.id, 232);
     }
 }

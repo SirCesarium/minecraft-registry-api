@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use serde::Deserialize;
 
 #[derive(Debug)]
@@ -19,66 +21,55 @@ pub struct BuildDownload<'a> {
     pub build: i64,
 }
 
-#[derive(Debug)]
-pub struct VersionBuildsQuery<'a> {
-    pub project: &'a str,
-    pub version: &'a str,
-}
-
 #[derive(Debug, Deserialize)]
 pub struct PaperProject {
-    pub project_id: String,
-    pub project_name: String,
-    pub version_groups: Vec<String>,
-    pub versions: Vec<String>,
+    pub project: PaperProjectInfo,
+    pub versions: HashMap<String, Vec<String>>,
 }
 
 #[derive(Debug, Deserialize)]
-pub struct PaperVersionBuilds {
-    pub project_id: String,
-    pub project_name: String,
-    pub version: String,
-    pub builds: Vec<PaperVersionBuild>,
+pub struct PaperProjectInfo {
+    pub id: String,
+    pub name: String,
 }
 
 #[derive(Debug, Deserialize)]
-pub struct PaperVersionBuild {
-    pub build: i64,
-    pub time: String,
-    pub channel: String,
-    pub promoted: bool,
-    pub changes: Vec<Change>,
-    pub downloads: Downloads,
+pub struct PaperVersion {
+    pub version: PaperVersionInfo,
+    pub builds: Vec<i64>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct PaperVersionInfo {
+    pub id: String,
 }
 
 #[derive(Debug, Deserialize)]
 pub struct PaperBuild {
-    pub project_id: String,
-    pub project_name: String,
-    pub version: String,
-    pub build: i64,
+    pub id: i64,
     pub time: String,
     pub channel: String,
-    pub promoted: bool,
-    pub changes: Vec<Change>,
-    pub downloads: Downloads,
+    pub commits: Vec<PaperBuildCommit>,
+    pub downloads: HashMap<String, PaperBuildFile>,
 }
 
 #[derive(Debug, Deserialize)]
-pub struct Change {
-    pub commit: String,
-    pub summary: String,
+pub struct PaperBuildCommit {
+    pub sha: String,
+    pub time: String,
     pub message: String,
 }
 
 #[derive(Debug, Deserialize)]
-pub struct Downloads {
-    pub application: Application,
+pub struct PaperBuildFile {
+    pub name: String,
+    pub checksums: PaperBuildChecksums,
+    pub size: i64,
+    pub url: String,
 }
 
 #[derive(Debug, Deserialize)]
-pub struct Application {
-    pub name: String,
+pub struct PaperBuildChecksums {
     pub sha256: String,
 }
 
@@ -90,67 +81,52 @@ mod tests {
     #[test]
     fn test_paper_project_deserialize() {
         let json = serde_json::json!({
-            "project_id": "paper",
-            "project_name": "Paper",
-            "version_groups": ["1.21"],
-            "versions": ["1.21.4"]
+            "project": { "id": "paper", "name": "Paper" },
+            "versions": {
+                "26.1": ["26.1.2", "26.1.1"],
+                "1.21": ["1.21.11"]
+            }
         });
         let p: PaperProject = serde_json::from_value(json).unwrap();
-        assert_eq!(p.project_id, "paper");
+        assert_eq!(p.project.id, "paper");
+        assert_eq!(p.versions.get("26.1").unwrap()[0], "26.1.2");
     }
 
     #[test]
-    fn test_paper_version_builds_deserialize() {
+    fn test_paper_version_deserialize() {
         let json = serde_json::json!({
-            "project_id": "paper",
-            "project_name": "Paper",
-            "version": "1.21.4",
-            "builds": [{
-                "build": 123,
-                "time": "2024-12-03T13:00:00Z",
-                "channel": "default",
-                "promoted": true,
-                "changes": [],
-                "downloads": {
-                    "application": {
-                        "name": "paper-1.21.4-123.jar",
-                        "sha256": "deadbeef"
-                    }
-                }
-            }]
+            "version": { "id": "26.1.2" },
+            "builds": [72, 71, 70]
         });
-        let v: PaperVersionBuilds = serde_json::from_value(json).unwrap();
-        assert_eq!(v.version, "1.21.4");
-        assert_eq!(v.builds.len(), 1);
-        assert_eq!(v.builds[0].build, 123);
+        let v: PaperVersion = serde_json::from_value(json).unwrap();
+        assert_eq!(v.version.id, "26.1.2");
+        assert_eq!(v.builds, vec![72, 71, 70]);
     }
 
     #[test]
     fn test_paper_build_deserialize() {
         let json = serde_json::json!({
-            "project_id": "paper",
-            "project_name": "Paper",
-            "version": "1.21.4",
-            "build": 123,
-            "time": "2024-12-03T13:00:00Z",
-            "channel": "default",
-            "promoted": true,
-            "changes": [{
-                "commit": "abc123",
-                "summary": "Fix bug",
-                "message": "Fix a critical bug"
+            "id": 72,
+            "time": "2026-06-19T13:08:47Z",
+            "channel": "STABLE",
+            "commits": [{
+                "sha": "abc123",
+                "time": "2026-06-19T13:08:32Z",
+                "message": "Fix bug"
             }],
             "downloads": {
-                "application": {
-                    "name": "paper-1.21.4-123.jar",
-                    "sha256": "deadbeef"
+                "server:default": {
+                    "name": "paper-26.1.2-72.jar",
+                    "checksums": { "sha256": "deadbeef" },
+                    "size": 52892581,
+                    "url": "https://fill-data.papermc.io/v1/objects/deadbeef/paper-26.1.2-72.jar"
                 }
             }
         });
         let b: PaperBuild = serde_json::from_value(json).unwrap();
-        assert_eq!(b.build, 123);
-        assert!(b.promoted);
-        assert_eq!(b.downloads.application.name, "paper-1.21.4-123.jar");
-        assert_eq!(b.changes[0].commit, "abc123");
+        assert_eq!(b.id, 72);
+        assert_eq!(b.channel, "STABLE");
+        assert_eq!(b.commits[0].sha, "abc123");
+        assert_eq!(b.downloads["server:default"].name, "paper-26.1.2-72.jar");
     }
 }
