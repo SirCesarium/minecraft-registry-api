@@ -19,12 +19,26 @@ pub struct BuildDownload<'a> {
     pub build: i64,
 }
 
+#[derive(Debug)]
+pub struct VersionBuildsQuery<'a> {
+    pub project: &'a str,
+    pub version: &'a str,
+}
+
 #[derive(Debug, Deserialize)]
 pub struct PaperProject {
     pub project_id: String,
     pub project_name: String,
     pub version_groups: Vec<String>,
     pub versions: Vec<String>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct PaperVersionBuilds {
+    pub project_id: String,
+    pub project_name: String,
+    pub version: String,
+    pub builds: Vec<PaperBuild>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -73,6 +87,35 @@ mod tests {
         });
         let p: PaperProject = serde_json::from_value(json).unwrap();
         assert_eq!(p.project_id, "paper");
+    }
+
+    #[test]
+    fn test_paper_version_builds_deserialize() {
+        let json = serde_json::json!({
+            "project_id": "paper",
+            "project_name": "Paper",
+            "version": "1.21.4",
+            "builds": [{
+                "project_id": "paper",
+                "project_name": "Paper",
+                "version": "1.21.4",
+                "build": 123,
+                "time": "2024-12-03T13:00:00Z",
+                "channel": "default",
+                "promoted": true,
+                "changes": [],
+                "downloads": {
+                    "application": {
+                        "name": "paper-1.21.4-123.jar",
+                        "sha256": "deadbeef"
+                    }
+                }
+            }]
+        });
+        let v: PaperVersionBuilds = serde_json::from_value(json).unwrap();
+        assert_eq!(v.version, "1.21.4");
+        assert_eq!(v.builds.len(), 1);
+        assert_eq!(v.builds[0].build, 123);
     }
 
     #[test]
