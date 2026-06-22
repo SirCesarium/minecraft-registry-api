@@ -38,7 +38,17 @@ pub struct PaperVersionBuilds {
     pub project_id: String,
     pub project_name: String,
     pub version: String,
-    pub builds: Vec<PaperBuild>,
+    pub builds: Vec<PaperVersionBuild>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct PaperVersionBuild {
+    pub build: i64,
+    pub time: String,
+    pub channel: String,
+    pub promoted: bool,
+    pub changes: Vec<Change>,
+    pub downloads: Downloads,
 }
 
 #[derive(Debug, Deserialize)]
@@ -96,9 +106,6 @@ mod tests {
             "project_name": "Paper",
             "version": "1.21.4",
             "builds": [{
-                "project_id": "paper",
-                "project_name": "Paper",
-                "version": "1.21.4",
                 "build": 123,
                 "time": "2024-12-03T13:00:00Z",
                 "channel": "default",
