@@ -2,7 +2,7 @@ use crate::{
     error::ApiError,
     purpur::{
         BASE, PurpurClient,
-        models::{BuildDownload, PurpurVersion, VersionQuery},
+        models::{BuildDownload, PurpurBuildInfo, PurpurVersion, VersionQuery},
     },
 };
 
@@ -14,6 +14,21 @@ impl PurpurClient {
     /// Returns [`ApiError::Http`] if the request or parsing fails.
     pub async fn get_version(&self, params: VersionQuery<'_>) -> Result<PurpurVersion, ApiError> {
         let url = format!("{BASE}/purpur/{}", params.version);
+        let resp = self.client.get(&url).send().await?.error_for_status()?;
+        Ok(resp.json().await?)
+    }
+
+    /// Fetches info for a specific Purpur build, including metadata (e.g. channel type).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ApiError::Http`] if the request or parsing fails.
+    pub async fn get_build(
+        &self,
+        version: &str,
+        build: &str,
+    ) -> Result<PurpurBuildInfo, ApiError> {
+        let url = format!("{BASE}/purpur/{version}/{build}");
         let resp = self.client.get(&url).send().await?.error_for_status()?;
         Ok(resp.json().await?)
     }
@@ -68,5 +83,13 @@ mod tests {
             .await
             .unwrap();
         assert_eq!(v.version, "1.21.4");
+    }
+
+    #[tokio::test]
+    async fn test_get_purpur_build() {
+        let client = PurpurClient::new(Client::new());
+        let b = client.get_build("1.21.4", "2416").await.unwrap();
+        assert_eq!(b.build, "2416");
+        assert!(b.metadata.is_none() || b.metadata.unwrap().type_field.is_none());
     }
 }

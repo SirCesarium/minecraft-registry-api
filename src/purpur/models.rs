@@ -36,6 +36,21 @@ pub struct Builds {
     pub all: Vec<String>,
 }
 
+#[derive(Debug, Deserialize)]
+pub struct PurpurBuildInfo {
+    pub project: String,
+    pub version: String,
+    pub build: String,
+    pub result: String,
+    pub metadata: Option<BuildMetadata>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct BuildMetadata {
+    #[serde(rename = "type")]
+    pub type_field: Option<String>,
+}
+
 #[cfg(test)]
 #[allow(clippy::unwrap_used)]
 mod tests {
