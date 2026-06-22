@@ -1,6 +1,6 @@
 [package]
 name = "minecraft_registry_api"
-version = "1.1.0"
+version = "1.2.0"
 edition = "2024"
 description = "Typed API clients for Minecraft modding platforms — Modrinth, Mojang, Paper, Purpur, Fabric, Forge, NeoForge"
 license = "MIT"
