@@ -118,7 +118,7 @@ mod tests {
                 "server:default": {
                     "name": "paper-26.1.2-72.jar",
                     "checksums": { "sha256": "deadbeef" },
-                    "size": 52892581,
+                    "size": 52_892_581,
                     "url": "https://fill-data.papermc.io/v1/objects/deadbeef/paper-26.1.2-72.jar"
                 }
             }
