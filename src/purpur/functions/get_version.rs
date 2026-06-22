@@ -24,7 +24,7 @@ impl PurpurClient {
     ///
     /// Returns [`ApiError::Http`] if the request or parsing fails.
     pub async fn download_build(&self, params: BuildDownload<'_>) -> Result<Vec<u8>, ApiError> {
-        let url = format!("{BASE}/purpur/{}/{}", params.version, params.build);
+        let url = format!("{BASE}/purpur/{}/{}/download", params.version, params.build);
         let resp = self.client.get(&url).send().await?.error_for_status()?;
         Ok(resp.bytes().await?.to_vec())
     }
@@ -41,7 +41,7 @@ impl PurpurClient {
         params: BuildDownload<'_>,
         mut on_chunk: F,
     ) -> Result<(Option<u64>, u64), ApiError> {
-        let url = format!("{BASE}/purpur/{}/{}", params.version, params.build);
+        let url = format!("{BASE}/purpur/{}/{}/download", params.version, params.build);
         let mut resp = self.client.get(&url).send().await?.error_for_status()?;
         let total = resp.content_length();
         let mut downloaded = 0u64;
