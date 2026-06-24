@@ -35,7 +35,7 @@ pub struct Hit {
     pub server_side: String,
     pub gallery: Vec<Value>,
     pub featured_gallery: Value,
-    pub color: i64,
+    pub color: Option<i64>,
 }
 
 #[allow(clippy::struct_field_names)]
@@ -74,7 +74,7 @@ pub struct Project {
     pub discord_url: String,
     pub donation_urls: Vec<Value>,
     pub gallery: Vec<Value>,
-    pub color: i64,
+    pub color: Option<i64>,
     pub thread_id: String,
     pub monetization_status: String,
 }
@@ -277,6 +277,7 @@ mod tests {
         assert_eq!(result.total_hits, 1);
         assert_eq!(result.hits[0].slug, "sodium");
         assert_eq!(result.hits[0].project_type, "mod");
+        assert_eq!(result.hits[0].color, Some(16_733_525));
     }
 
     #[test]
@@ -324,6 +325,7 @@ mod tests {
         assert_eq!(project.project_type, "mod");
         assert_eq!(project.loaders, vec!["fabric", "quilt"]);
         assert_eq!(project.monetization_status, "none");
+        assert_eq!(project.color, Some(16_733_525));
     }
 
     #[test]
