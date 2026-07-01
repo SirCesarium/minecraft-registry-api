@@ -68,10 +68,10 @@ pub struct Project {
     pub loaders: Vec<String>,
     pub versions: Vec<String>,
     pub icon_url: String,
-    pub issues_url: String,
-    pub source_url: String,
-    pub wiki_url: String,
-    pub discord_url: String,
+    pub issues_url: Option<String>,
+    pub source_url: Option<String>,
+    pub wiki_url: Option<String>,
+    pub discord_url: Option<String>,
     pub donation_urls: Vec<Value>,
     pub gallery: Vec<Value>,
     pub color: Option<i64>,
@@ -312,8 +312,8 @@ mod tests {
             "icon_url": "https://example.com/icon.png",
             "issues_url": "https://example.com/issues",
             "source_url": "https://example.com/source",
-            "wiki_url": "",
-            "discord_url": "",
+            "wiki_url": null,
+            "discord_url": null,
             "donation_urls": [],
             "gallery": [],
             "color": 16_733_525,
@@ -326,6 +326,13 @@ mod tests {
         assert_eq!(project.loaders, vec!["fabric", "quilt"]);
         assert_eq!(project.monetization_status, "none");
         assert_eq!(project.color, Some(16_733_525));
+        assert_eq!(
+            project.issues_url,
+            Some("https://example.com/issues".to_string())
+        );
+        assert_eq!(project.source_url, Some("https://example.com/source".to_string()));
+        assert_eq!(project.wiki_url, None);
+        assert_eq!(project.discord_url, None);
     }
 
     #[test]
