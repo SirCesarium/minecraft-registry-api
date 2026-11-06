@@ -51,7 +51,7 @@ mod tests {
     async fn test_get_version() {
         let client = PaperClient::new(Client::new());
         let v = client.get_version("paper", "1.21.4").await.unwrap();
-        assert!(!v.builds.is_empty());
+        assert_ne!(v.builds.len(), 0);
     }
 
     #[tokio::test]
