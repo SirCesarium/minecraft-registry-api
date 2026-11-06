@@ -29,6 +29,6 @@ mod tests {
     async fn test_get_metadata() {
         let client = NeoForgeClient::new(Client::new());
         let meta = client.get_metadata().await.unwrap();
-        assert!(!meta.versioning.versions.list.is_empty());
+        assert_ne!(meta.versioning.versions.list.len(), 0);
     }
 }
