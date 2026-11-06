@@ -33,6 +33,6 @@ mod tests {
         let v = client.get_manifest().await.unwrap();
 
         assert!(!v.versions.is_empty());
-        assert!(!v.latest.release.is_empty());
+        assert_ne!(v.latest.release, "");
     }
 }
