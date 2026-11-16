@@ -1,0 +1,53 @@
+[
+  {
+    "game_versions": ["1.21.4"],
+    "loaders": ["fabric"],
+    "id": "version-id",
+    "project_id": "P7dR8mSH",
+    "author_id": "author-id",
+    "featured": true,
+    "name": "Fabric API 0.115.0",
+    "version_number": "0.115.0+1.21.4",
+    "changelog": "Fixes a crash on startup.",
+    "changelog_url": null,
+    "date_published": "2025-01-01T00:00:00Z",
+    "downloads": 1000,
+    "version_type": "release",
+    "status": "listed",
+    "requested_status": null,
+    "files": [
+      {
+        "id": "file-id",
+        "hashes": {
+          "sha512": "sha512-value",
+          "sha1": "sha1-value"
+        },
+        "url": "https://cdn.test/fabric-api.jar",
+        "filename": "fabric-api-0.115.0.jar",
+        "primary": true,
+        "size": 2048,
+        "file_type": null
+      }
+    ],
+    "dependencies": []
+  },
+  {
+    "game_versions": ["1.21.3"],
+    "loaders": ["fabric"],
+    "id": "older-version-id",
+    "project_id": "P7dR8mSH",
+    "author_id": "author-id",
+    "featured": false,
+    "name": "Fabric API 0.114.0",
+    "version_number": "0.114.0+1.21.3",
+    "changelog": "",
+    "changelog_url": null,
+    "date_published": "2024-12-01T00:00:00Z",
+    "downloads": 900,
+    "version_type": "release",
+    "status": "listed",
+    "requested_status": null,
+    "files": [],
+    "dependencies": []
+  }
+]

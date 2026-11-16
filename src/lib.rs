@@ -15,3 +15,15 @@ pub mod paper;
 pub mod purpur;
 
 pub mod ffi;
+pub mod transport;
+
+#[cfg(any(
+    feature = "fabric",
+    feature = "forge",
+    feature = "modrinth",
+    feature = "mojang",
+    feature = "neoforge",
+    feature = "paper",
+    feature = "purpur"
+))]
+pub(crate) mod http;

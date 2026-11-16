@@ -1,6 +1,7 @@
 use crate::{
     error::ApiError,
-    forge::{ForgeClient, models::InstallerQuery},
+    forge::{ForgeClient, MAVEN, models::InstallerQuery},
+    http,
 };
 
 impl ForgeClient {
@@ -13,13 +14,9 @@ impl ForgeClient {
         &self,
         params: InstallerQuery<'_>,
     ) -> Result<Vec<u8>, ApiError> {
-        let url = format!(
-            "https://maven.minecraftforge.net/net/minecraftforge/forge/{mc_version}-{forge_version}/forge-{mc_version}-{forge_version}-installer.jar",
-            mc_version = params.mc_version,
-            forge_version = params.forge_version,
-        );
-        let resp = self.client.get(&url).send().await?.error_for_status()?;
-        Ok(resp.bytes().await?.to_vec())
+        let url = installer_url(params.mc_version, params.forge_version);
+
+        http::get_bytes(self.transport.as_ref(), &url, &[]).await
     }
 
     /// Downloads a `Forge` installer JAR, calling `on_chunk` for each received chunk.
@@ -32,49 +29,16 @@ impl ForgeClient {
     pub async fn download_installer_to<F: FnMut(&[u8])>(
         &self,
         params: InstallerQuery<'_>,
-        mut on_chunk: F,
+        on_chunk: F,
     ) -> Result<(Option<u64>, u64), ApiError> {
-        let url = format!(
-            "https://maven.minecraftforge.net/net/minecraftforge/forge/{mc_version}-{forge_version}/forge-{mc_version}-{forge_version}-installer.jar",
-            mc_version = params.mc_version,
-            forge_version = params.forge_version,
-        );
-        let mut resp = self.client.get(&url).send().await?.error_for_status()?;
-        let total = resp.content_length();
-        let mut downloaded = 0u64;
-        while let Some(chunk) = resp.chunk().await? {
-            on_chunk(&chunk);
-            downloaded += chunk.len() as u64;
-        }
-        Ok((total, downloaded))
+        let url = installer_url(params.mc_version, params.forge_version);
+
+        http::get_stream(self.transport.as_ref(), &url, &[], on_chunk).await
     }
 }
 
-#[cfg(test)]
-#[allow(clippy::unwrap_used)]
-mod tests {
-    use super::*;
-    use crate::forge::models::InstallerQuery;
-    use reqwest::Client;
-
-    #[tokio::test]
-    async fn test_download_installer() {
-        let client = ForgeClient::new(Client::new());
-        // Use promos to get a known version
-        let promos = client.get_promos().await.unwrap();
-        let latest = promos
-            .promos
-            .get("1.21.4-recommended")
-            .or_else(|| promos.promos.get("1.21.4-latest"))
-            .cloned()
-            .unwrap_or_else(|| "54.1.16".to_string());
-        let jar = client
-            .download_installer(InstallerQuery {
-                mc_version: "1.21.4",
-                forge_version: &latest,
-            })
-            .await
-            .unwrap();
-        assert!(jar.len() > 100_000);
-    }
+fn installer_url(mc_version: &str, forge_version: &str) -> String {
+    format!(
+        "{MAVEN}/net/minecraftforge/forge/{mc_version}-{forge_version}/forge-{mc_version}-{forge_version}-installer.jar"
+    )
 }

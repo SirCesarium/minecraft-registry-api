@@ -1,0 +1,8 @@
+[
+  {
+    "url": "https://maven.fabricmc.net/net/fabricmc/fabric-installer/1.1.1/fabric-installer-1.1.1.jar",
+    "maven": "net.fabricmc:fabric-installer:1.1.1",
+    "version": "1.1.1",
+    "stable": true
+  }
+]

@@ -1,0 +1,33 @@
+{
+  "hits": [
+    {
+      "project_id": "AAT9mSHY",
+      "project_type": "mod",
+      "slug": "sodium",
+      "author": "CaffeineMC",
+      "author_id": "author-id",
+      "organization": null,
+      "organization_id": null,
+      "title": "Sodium",
+      "description": "Modern rendering engine",
+      "categories": ["optimization"],
+      "display_categories": ["optimization"],
+      "versions": ["1.21.4"],
+      "downloads": 5000000,
+      "follows": 20000,
+      "icon_url": "https://cdn.test/sodium.png",
+      "date_created": "2020-03-01T00:00:00Z",
+      "date_modified": "2025-01-01T00:00:00Z",
+      "latest_version": "mc1.21.4-0.6.0",
+      "license": "LGPL-3.0-only",
+      "client_side": "required",
+      "server_side": "unsupported",
+      "gallery": [],
+      "featured_gallery": null,
+      "color": 3949738
+    }
+  ],
+  "offset": 20,
+  "limit": 10,
+  "total_hits": 1
+}

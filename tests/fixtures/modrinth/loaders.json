@@ -1,0 +1,12 @@
+[
+  {
+    "icon": "fabric",
+    "name": "Fabric",
+    "supported_project_types": ["mod", "modpack"]
+  },
+  {
+    "icon": "neoforge",
+    "name": "NeoForge",
+    "supported_project_types": ["mod", "modpack"]
+  }
+]

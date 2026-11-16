@@ -109,13 +109,29 @@ Then enable the features you need (modrinth and mojang are on by default).
 
 ## Tests
 
-Tests hit real APIs. No mocks, no fixtures.
+The suite is hermetic. The clients are exercised through an in-memory `Transport`,
+so tests never touch the network and need no local server. Fixtures live in
+`tests/fixtures`.
 
 ```bash
-cargo test --features full
+cargo test              # default features
+cargo test --all-features
 ```
 
-Clippy lints deny `unwrap_used` and `expect_used` across the library. Test modules use `#[allow(clippy::unwrap_used)]`.
+Clippy runs on all targets and denies `unwrap_used` / `expect_used` across the
+library; test code allows them explicitly.
+
+### Custom transport
+
+`reqwest::Client` is the default transport. Any `Transport` implementation can
+replace it, which is how the tests run and how callers can route requests
+through their own stack:
+
+```rust
+use minecraft_registry_api::modrinth::ModrinthClient;
+
+let client = ModrinthClient::with_transport(my_transport); // Arc<dyn Transport>
+```
 
 ## License
 

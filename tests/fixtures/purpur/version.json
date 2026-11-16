@@ -1,0 +1,8 @@
+{
+  "project": "purpur",
+  "version": "1.21.4",
+  "builds": {
+    "latest": "2416",
+    "all": ["2416", "2415"]
+  }
+}

@@ -1,0 +1,14 @@
+[
+  {
+    "version": "1.21.4",
+    "version_type": "release",
+    "date": "2024-12-03T00:00:00Z",
+    "major": true
+  },
+  {
+    "version": "25w02a",
+    "version_type": "snapshot",
+    "date": "2025-01-08T00:00:00Z",
+    "major": false
+  }
+]

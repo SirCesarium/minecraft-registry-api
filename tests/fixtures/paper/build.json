@@ -1,0 +1,22 @@
+{
+  "id": 232,
+  "time": "2024-12-04T00:00:00Z",
+  "channel": "STABLE",
+  "commits": [
+    {
+      "sha": "abc123",
+      "time": "2024-12-03T00:00:00Z",
+      "message": "Update to 1.21.4"
+    }
+  ],
+  "downloads": {
+    "server:default": {
+      "name": "paper-1.21.4-232.jar",
+      "checksums": {
+        "sha256": "deadbeef"
+      },
+      "size": 52892581,
+      "url": "https://cdn.test/paper-1.21.4-232.jar"
+    }
+  }
+}

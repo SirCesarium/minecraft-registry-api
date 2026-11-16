@@ -30,6 +30,37 @@ name = "minecraft_registry_api"
 path = "src/lib.rs"
 crate-type = ["lib", "cdylib", "staticlib"]
 
+[dev-dependencies]
+http = "1.5"
+
+[[test]]
+name = "fabric"
+required-features = ["fabric"]
+
+[[test]]
+name = "forge"
+required-features = ["forge"]
+
+[[test]]
+name = "modrinth"
+required-features = ["modrinth"]
+
+[[test]]
+name = "mojang"
+required-features = ["mojang"]
+
+[[test]]
+name = "neoforge"
+required-features = ["neoforge"]
+
+[[test]]
+name = "paper"
+required-features = ["paper"]
+
+[[test]]
+name = "purpur"
+required-features = ["purpur"]
+
 [lints.clippy]
 all = "deny"
 pedantic = "deny"

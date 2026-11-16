@@ -1,5 +1,6 @@
 use crate::{
     error::ApiError,
+    http,
     paper::{
         BASE, PaperClient,
         models::{PaperBuild, PaperVersion},
@@ -12,10 +13,13 @@ impl PaperClient {
     /// # Errors
     ///
     /// Returns [`ApiError::Http`] if the request or parsing fails.
-    pub async fn get_version(&self, project: &str, version: &str) -> Result<PaperVersion, ApiError> {
+    pub async fn get_version(
+        &self,
+        project: &str,
+        version: &str,
+    ) -> Result<PaperVersion, ApiError> {
         let url = format!("{BASE}/projects/{project}/versions/{version}");
-        let resp = self.client.get(&url).send().await?.error_for_status()?;
-        Ok(resp.json().await?)
+        http::get_json(self.transport.as_ref(), &url, &[]).await
     }
 
     /// Fetches builds for a version filtered by channel (e.g. "STABLE", "ALPHA", "BETA").
@@ -30,35 +34,8 @@ impl PaperClient {
         channel: &str,
     ) -> Result<Vec<PaperBuild>, ApiError> {
         let url = format!("{BASE}/projects/{project}/versions/{version}/builds");
-        let resp = self
-            .client
-            .get(&url)
-            .query(&[("channel", channel)])
-            .send()
-            .await?
-            .error_for_status()?;
-        Ok(resp.json().await?)
-    }
-}
+        let query = [("channel", channel.to_owned())];
 
-#[cfg(test)]
-#[allow(clippy::unwrap_used)]
-mod tests {
-    use super::*;
-    use reqwest::Client;
-
-    #[tokio::test]
-    async fn test_get_version() {
-        let client = PaperClient::new(Client::new());
-        let v = client.get_version("paper", "1.21.4").await.unwrap();
-        assert_ne!(v.builds.len(), 0);
-    }
-
-    #[tokio::test]
-    async fn test_get_stable_builds() {
-        let client = PaperClient::new(Client::new());
-        let builds = client.get_builds_by_channel("paper", "26.1.2", "STABLE").await.unwrap();
-        assert!(!builds.is_empty());
-        assert!(builds.iter().all(|b| b.channel == "STABLE"));
+        http::get_json(self.transport.as_ref(), &url, &query).await
     }
 }
