@@ -119,4 +119,4 @@ Clippy lints deny `unwrap_used` and `expect_used` across the library. Test modul
 
 ## License
 
-MIT
+Distributed under the [MIT License](LICENSE).
