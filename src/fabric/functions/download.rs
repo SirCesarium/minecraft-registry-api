@@ -16,7 +16,7 @@ impl FabricClient {
     ) -> Result<Vec<u8>, ApiError> {
         let url = installer_url(params.version);
 
-        http::get_bytes(self.transport.as_ref(), &url, &[]).await
+        http::get_bytes(self.hook.as_ref(), &url, &[]).await
     }
 
     /// Downloads a `Fabric` installer JAR, calling `on_chunk` for each received chunk.
@@ -33,7 +33,7 @@ impl FabricClient {
     ) -> Result<(Option<u64>, u64), ApiError> {
         let url = installer_url(params.version);
 
-        http::get_stream(self.transport.as_ref(), &url, &[], on_chunk).await
+        http::get_stream(self.hook.as_ref(), &url, &[], on_chunk).await
     }
 }
 

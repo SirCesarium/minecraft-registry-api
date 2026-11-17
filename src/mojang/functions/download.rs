@@ -12,7 +12,7 @@ impl MojangClient {
     /// Returns [`ApiError::Http`] if the request fails.
     pub async fn download(&self, params: DownloadSpec<'_>) -> Result<Vec<u8>, ApiError> {
         let url = format!("{OBJECTS_BASE}/{}/{}", params.hash, params.file);
-        http::get_bytes(self.transport.as_ref(), &url, &[]).await
+        http::get_bytes(self.hook.as_ref(), &url, &[]).await
     }
 
     /// Downloads a file by its hash, calling `on_chunk` for each received chunk.
@@ -28,6 +28,6 @@ impl MojangClient {
         on_chunk: F,
     ) -> Result<(Option<u64>, u64), ApiError> {
         let url = format!("{OBJECTS_BASE}/{}/{}", params.hash, params.file);
-        http::get_stream(self.transport.as_ref(), &url, &[], on_chunk).await
+        http::get_stream(self.hook.as_ref(), &url, &[], on_chunk).await
     }
 }

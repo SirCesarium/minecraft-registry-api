@@ -4,14 +4,14 @@ mod support;
 
 use minecraft_registry_api::forge::ForgeClient;
 use minecraft_registry_api::forge::models::InstallerQuery;
-use support::{MockTransport, assert_http_error, body_mock, error_mock};
+use support::{MockHook, assert_http_error, body_mock, error_mock};
 
 const PROMOS: &str = include_str!("fixtures/forge/promos.json");
 
 #[tokio::test]
 async fn get_promos_builds_url_and_maps_response() {
     let mock = body_mock(PROMOS);
-    let client = ForgeClient::with_transport(mock.clone());
+    let client = ForgeClient::with_hook(mock.clone());
 
     let promos = client.get_promos().await.unwrap();
 
@@ -25,9 +25,9 @@ async fn get_promos_builds_url_and_maps_response() {
 
 #[tokio::test]
 async fn download_installer_builds_url_and_returns_bytes() {
-    let mock = MockTransport::new();
+    let mock = MockHook::new();
     mock.enqueue_bytes(b"forge-installer");
-    let client = ForgeClient::with_transport(mock.clone());
+    let client = ForgeClient::with_hook(mock.clone());
 
     let bytes = client
         .download_installer(InstallerQuery {
@@ -46,9 +46,9 @@ async fn download_installer_builds_url_and_returns_bytes() {
 
 #[tokio::test]
 async fn download_installer_to_reports_progress_and_streams_bytes() {
-    let mock = MockTransport::new();
+    let mock = MockHook::new();
     mock.enqueue_bytes(b"forge-installer");
-    let client = ForgeClient::with_transport(mock.clone());
+    let client = ForgeClient::with_hook(mock.clone());
     let mut collected = Vec::new();
 
     let (content_length, downloaded) = client
@@ -70,7 +70,7 @@ async fn download_installer_to_reports_progress_and_streams_bytes() {
 #[tokio::test]
 async fn get_promos_reports_server_error() {
     let mock = error_mock(500);
-    let client = ForgeClient::with_transport(mock);
+    let client = ForgeClient::with_hook(mock);
 
     let error = client.get_promos().await.unwrap_err();
 

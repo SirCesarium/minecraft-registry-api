@@ -4,7 +4,7 @@ mod support;
 
 use minecraft_registry_api::mojang::MojangClient;
 use minecraft_registry_api::mojang::models::DownloadSpec;
-use support::{MockTransport, assert_http_error, body_mock, error_mock};
+use support::{MockHook, assert_http_error, body_mock, error_mock};
 
 const MANIFEST: &str = include_str!("fixtures/mojang/manifest.json");
 const HASH: &str = "0000000000000000000000000000000000000000";
@@ -12,7 +12,7 @@ const HASH: &str = "0000000000000000000000000000000000000000";
 #[tokio::test]
 async fn get_manifest_builds_url_and_maps_response() {
     let mock = body_mock(MANIFEST);
-    let client = MojangClient::with_transport(mock.clone());
+    let client = MojangClient::with_hook(mock.clone());
 
     let manifest = client.get_manifest().await.unwrap();
 
@@ -29,7 +29,7 @@ async fn get_manifest_builds_url_and_maps_response() {
 #[tokio::test]
 async fn get_manifest_reports_server_error() {
     let mock = error_mock(500);
-    let client = MojangClient::with_transport(mock);
+    let client = MojangClient::with_hook(mock);
 
     let error = client.get_manifest().await.unwrap_err();
 
@@ -38,9 +38,9 @@ async fn get_manifest_reports_server_error() {
 
 #[tokio::test]
 async fn download_builds_url_and_returns_bytes() {
-    let mock = MockTransport::new();
+    let mock = MockHook::new();
     mock.enqueue_bytes(b"jar-bytes");
-    let client = MojangClient::with_transport(mock.clone());
+    let client = MojangClient::with_hook(mock.clone());
 
     let bytes = client
         .download(DownloadSpec {
@@ -59,9 +59,9 @@ async fn download_builds_url_and_returns_bytes() {
 
 #[tokio::test]
 async fn download_to_reports_progress_and_streams_bytes() {
-    let mock = MockTransport::new();
+    let mock = MockHook::new();
     mock.enqueue_bytes(b"streamed-jar");
-    let client = MojangClient::with_transport(mock.clone());
+    let client = MojangClient::with_hook(mock.clone());
     let mut collected = Vec::new();
 
     let (content_length, downloaded) = client
@@ -87,7 +87,7 @@ async fn download_to_reports_progress_and_streams_bytes() {
 #[tokio::test]
 async fn download_to_reports_missing_object() {
     let mock = error_mock(404);
-    let client = MojangClient::with_transport(mock);
+    let client = MojangClient::with_hook(mock);
 
     let error = client
         .download_to(

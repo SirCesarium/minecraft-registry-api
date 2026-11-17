@@ -19,7 +19,7 @@ impl PaperClient {
             params.project, params.version, params.build
         );
 
-        http::get_json(self.transport.as_ref(), &url, &[]).await
+        http::get_json(self.hook.as_ref(), &url, &[]).await
     }
 
     /// Downloads a build artifact from `PaperMC` Fill v3 API.
@@ -31,7 +31,7 @@ impl PaperClient {
     pub async fn download_build(&self, params: BuildDownload<'_>) -> Result<Vec<u8>, ApiError> {
         let url = self.artifact_url(&params).await?;
 
-        http::get_bytes(self.transport.as_ref(), &url, &[]).await
+        http::get_bytes(self.hook.as_ref(), &url, &[]).await
     }
 
     /// Downloads a build artifact, calling `on_chunk` for each received chunk.
@@ -49,7 +49,7 @@ impl PaperClient {
     ) -> Result<(Option<u64>, u64), ApiError> {
         let url = self.artifact_url(&params).await?;
 
-        http::get_stream(self.transport.as_ref(), &url, &[], on_chunk).await
+        http::get_stream(self.hook.as_ref(), &url, &[], on_chunk).await
     }
 
     async fn artifact_url(&self, params: &BuildDownload<'_>) -> Result<String, ApiError> {

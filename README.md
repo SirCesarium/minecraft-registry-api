@@ -88,7 +88,7 @@ Multiple facets in the same inner `Vec` are OR'd. Multiple inner `Vec`s are AND'
 
 ### Models
 
-Models map 1:1 to each API's JSON. There is no unified domain model — that belongs in the consumer (e.g. conduit-core). Each `models.rs` module exposes the raw serde structs.
+Models map 1:1 to each API's JSON. There is no unified domain model — that belongs in the consumer. Each `models.rs` module exposes the raw serde structs.
 
 ### Error handling
 
@@ -109,29 +109,18 @@ Then enable the features you need (modrinth and mojang are on by default).
 
 ## Tests
 
-The suite is hermetic. The clients are exercised through an in-memory `Transport`,
-so tests never touch the network and need no local server. Fixtures live in
-`tests/fixtures`.
+The suite is hermetic. Clients accept an `HttpHook` that replaces the HTTP
+call, so tests run against canned responses without network access or a local
+server. Fixtures live in `tests/fixtures`.
 
 ```bash
 cargo test              # default features
 cargo test --all-features
 ```
 
-Clippy runs on all targets and denies `unwrap_used` / `expect_used` across the
-library; test code allows them explicitly.
-
-### Custom transport
-
-`reqwest::Client` is the default transport. Any `Transport` implementation can
-replace it, which is how the tests run and how callers can route requests
-through their own stack:
-
-```rust
-use minecraft_registry_api::modrinth::ModrinthClient;
-
-let client = ModrinthClient::with_transport(my_transport); // Arc<dyn Transport>
-```
+The hook is a testing seam; production code uses `reqwest::Client`. Clippy runs
+on all targets and denies `unwrap_used` / `expect_used` across the library;
+test code allows them explicitly.
 
 ## License
 

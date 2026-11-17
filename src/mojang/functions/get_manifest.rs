@@ -14,6 +14,6 @@ impl MojangClient {
     /// Returns [`ApiError::Http`] if the request or parsing fails.
     pub async fn get_manifest(&self) -> Result<MojangRoot, ApiError> {
         let url = format!("{META_BASE}{MANIFEST_PATH}");
-        http::get_json(self.transport.as_ref(), &url, &[]).await
+        http::get_json(self.hook.as_ref(), &url, &[]).await
     }
 }

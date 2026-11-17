@@ -31,6 +31,7 @@ path = "src/lib.rs"
 crate-type = ["lib", "cdylib", "staticlib"]
 
 [dev-dependencies]
+# Builds reqwest::Response values in the test HTTP hook.
 http = "1.5"
 
 [[test]]

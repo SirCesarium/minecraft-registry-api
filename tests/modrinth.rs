@@ -18,7 +18,7 @@ const GAME_VERSIONS: &str = include_str!("fixtures/modrinth/game_versions.json")
 #[tokio::test]
 async fn get_project_builds_url_and_maps_response() {
     let mock = body_mock(PROJECT);
-    let client = ModrinthClient::with_transport(mock.clone());
+    let client = ModrinthClient::with_hook(mock.clone());
 
     let project = client
         .get_project(ProjectRef { slug: "fabric-api" })
@@ -44,7 +44,7 @@ async fn get_project_builds_url_and_maps_response() {
 #[tokio::test]
 async fn get_project_reports_missing_project() {
     let mock = error_mock(404);
-    let client = ModrinthClient::with_transport(mock);
+    let client = ModrinthClient::with_hook(mock);
 
     let error = client
         .get_project(ProjectRef {
@@ -59,7 +59,7 @@ async fn get_project_reports_missing_project() {
 #[tokio::test]
 async fn get_project_reports_malformed_json() {
     let mock = body_mock(r#"{"slug": "#);
-    let client = ModrinthClient::with_transport(mock);
+    let client = ModrinthClient::with_hook(mock);
 
     let error = client
         .get_project(ProjectRef { slug: "fabric-api" })
@@ -72,7 +72,7 @@ async fn get_project_reports_malformed_json() {
 #[tokio::test]
 async fn search_sends_query_parameters() {
     let mock = body_mock(SEARCH);
-    let client = ModrinthClient::with_transport(mock.clone());
+    let client = ModrinthClient::with_hook(mock.clone());
 
     let result = client
         .search(SearchQuery {
@@ -99,7 +99,7 @@ async fn search_sends_query_parameters() {
 #[tokio::test]
 async fn search_serializes_facets_as_anded_groups_of_ored_facets() {
     let mock = body_mock(SEARCH);
-    let client = ModrinthClient::with_transport(mock.clone());
+    let client = ModrinthClient::with_hook(mock.clone());
 
     let facets = vec![
         vec![Facet::ProjectType(ProjectType::Modpack)],
@@ -127,7 +127,7 @@ async fn search_serializes_facets_as_anded_groups_of_ored_facets() {
 #[tokio::test]
 async fn get_versions_builds_url_and_maps_list() {
     let mock = body_mock(VERSIONS);
-    let client = ModrinthClient::with_transport(mock.clone());
+    let client = ModrinthClient::with_hook(mock.clone());
 
     let versions = client
         .get_versions(VersionListQuery {
@@ -148,7 +148,7 @@ async fn get_versions_builds_url_and_maps_list() {
 #[tokio::test]
 async fn get_version_builds_url_and_maps_response() {
     let mock = body_mock(VERSION);
-    let client = ModrinthClient::with_transport(mock.clone());
+    let client = ModrinthClient::with_hook(mock.clone());
 
     let version = client
         .get_version(VersionQuery {
@@ -169,7 +169,7 @@ async fn get_version_builds_url_and_maps_response() {
 #[tokio::test]
 async fn get_loaders_builds_url_and_maps_list() {
     let mock = body_mock(LOADERS);
-    let client = ModrinthClient::with_transport(mock.clone());
+    let client = ModrinthClient::with_hook(mock.clone());
 
     let loaders = client.get_loaders().await.unwrap();
 
@@ -185,7 +185,7 @@ async fn get_loaders_builds_url_and_maps_list() {
 #[tokio::test]
 async fn get_game_versions_builds_url_and_maps_list() {
     let mock = body_mock(GAME_VERSIONS);
-    let client = ModrinthClient::with_transport(mock.clone());
+    let client = ModrinthClient::with_hook(mock.clone());
 
     let versions = client.get_game_versions().await.unwrap();
 

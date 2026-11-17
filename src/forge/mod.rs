@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use reqwest::Client;
 
-use crate::transport::Transport;
+use crate::hook::HttpHook;
 
 mod functions;
 pub mod models;
@@ -12,18 +12,18 @@ pub(crate) const PROMO_URL: &str =
 pub(crate) const MAVEN: &str = "https://maven.minecraftforge.net";
 
 pub struct ForgeClient {
-    transport: Arc<dyn Transport>,
+    hook: Arc<dyn HttpHook>,
 }
 
 impl ForgeClient {
     #[must_use]
     pub fn new(client: Client) -> Self {
-        Self::with_transport(Arc::new(client))
+        Self::with_hook(Arc::new(client))
     }
 
-    /// Builds a client that sends requests through `transport` instead of the network.
+    /// Builds a client with a custom HTTP hook. Intended for tests.
     #[must_use]
-    pub fn with_transport(transport: Arc<dyn Transport>) -> Self {
-        Self { transport }
+    pub fn with_hook(hook: Arc<dyn HttpHook>) -> Self {
+        Self { hook }
     }
 }

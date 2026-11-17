@@ -31,6 +31,6 @@ impl ModrinthClient {
 
         let url = format!("{BASE}/search");
 
-        http::get_json(self.transport.as_ref(), &url, &query).await
+        http::get_json(self.hook.as_ref(), &url, &query).await
     }
 }

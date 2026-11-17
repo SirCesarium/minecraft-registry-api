@@ -5,14 +5,14 @@ mod support;
 use minecraft_registry_api::error::ApiError;
 use minecraft_registry_api::neoforge::NeoForgeClient;
 use minecraft_registry_api::neoforge::models::InstallerQuery;
-use support::{MockTransport, assert_http_error, body_mock, error_mock};
+use support::{MockHook, assert_http_error, body_mock, error_mock};
 
 const METADATA: &str = include_str!("fixtures/neoforge/metadata.xml");
 
 #[tokio::test]
 async fn get_metadata_builds_url_and_parses_xml() {
     let mock = body_mock(METADATA);
-    let client = NeoForgeClient::with_transport(mock.clone());
+    let client = NeoForgeClient::with_hook(mock.clone());
 
     let metadata = client.get_metadata().await.unwrap();
 
@@ -28,7 +28,7 @@ async fn get_metadata_builds_url_and_parses_xml() {
 #[tokio::test]
 async fn get_metadata_reports_invalid_xml() {
     let mock = body_mock("not xml at all");
-    let client = NeoForgeClient::with_transport(mock);
+    let client = NeoForgeClient::with_hook(mock);
 
     let error = client.get_metadata().await.unwrap_err();
 
@@ -38,7 +38,7 @@ async fn get_metadata_reports_invalid_xml() {
 #[tokio::test]
 async fn get_metadata_reports_missing_metadata() {
     let mock = error_mock(404);
-    let client = NeoForgeClient::with_transport(mock);
+    let client = NeoForgeClient::with_hook(mock);
 
     let error = client.get_metadata().await.unwrap_err();
 
@@ -47,9 +47,9 @@ async fn get_metadata_reports_missing_metadata() {
 
 #[tokio::test]
 async fn download_installer_builds_url_and_returns_bytes() {
-    let mock = MockTransport::new();
+    let mock = MockHook::new();
     mock.enqueue_bytes(b"neoforge-installer");
-    let client = NeoForgeClient::with_transport(mock.clone());
+    let client = NeoForgeClient::with_hook(mock.clone());
 
     let bytes = client
         .download_installer(InstallerQuery {
@@ -67,9 +67,9 @@ async fn download_installer_builds_url_and_returns_bytes() {
 
 #[tokio::test]
 async fn download_installer_to_reports_progress_and_streams_bytes() {
-    let mock = MockTransport::new();
+    let mock = MockHook::new();
     mock.enqueue_bytes(b"neoforge-installer");
-    let client = NeoForgeClient::with_transport(mock.clone());
+    let client = NeoForgeClient::with_hook(mock.clone());
     let mut collected = Vec::new();
 
     let (content_length, downloaded) = client
@@ -92,7 +92,7 @@ async fn download_installer_to_reports_progress_and_streams_bytes() {
 #[tokio::test]
 async fn download_installer_reports_missing_version() {
     let mock = error_mock(404);
-    let client = NeoForgeClient::with_transport(mock);
+    let client = NeoForgeClient::with_hook(mock);
 
     let error = client
         .download_installer(InstallerQuery {

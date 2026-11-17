@@ -4,7 +4,7 @@ mod support;
 
 use minecraft_registry_api::fabric::FabricClient;
 use minecraft_registry_api::fabric::models::InstallerQuery;
-use support::{MockTransport, assert_http_error, body_mock, error_mock};
+use support::{MockHook, assert_http_error, body_mock, error_mock};
 
 const GAME_VERSIONS: &str = include_str!("fixtures/fabric/game_versions.json");
 const LOADERS: &str = include_str!("fixtures/fabric/loaders.json");
@@ -13,7 +13,7 @@ const INSTALLERS: &str = include_str!("fixtures/fabric/installers.json");
 #[tokio::test]
 async fn get_game_versions_builds_url_and_maps_list() {
     let mock = body_mock(GAME_VERSIONS);
-    let client = FabricClient::with_transport(mock.clone());
+    let client = FabricClient::with_hook(mock.clone());
 
     let versions = client.get_game_versions().await.unwrap();
 
@@ -30,7 +30,7 @@ async fn get_game_versions_builds_url_and_maps_list() {
 #[tokio::test]
 async fn get_loaders_builds_url_and_maps_list() {
     let mock = body_mock(LOADERS);
-    let client = FabricClient::with_transport(mock.clone());
+    let client = FabricClient::with_hook(mock.clone());
 
     let loaders = client.get_loaders().await.unwrap();
 
@@ -45,7 +45,7 @@ async fn get_loaders_builds_url_and_maps_list() {
 #[tokio::test]
 async fn get_installer_versions_builds_url_and_maps_list() {
     let mock = body_mock(INSTALLERS);
-    let client = FabricClient::with_transport(mock.clone());
+    let client = FabricClient::with_hook(mock.clone());
 
     let installers = client.get_installer_versions().await.unwrap();
 
@@ -62,9 +62,9 @@ async fn get_installer_versions_builds_url_and_maps_list() {
 
 #[tokio::test]
 async fn download_installer_builds_url_and_returns_bytes() {
-    let mock = MockTransport::new();
+    let mock = MockHook::new();
     mock.enqueue_bytes(b"fabric-installer");
-    let client = FabricClient::with_transport(mock.clone());
+    let client = FabricClient::with_hook(mock.clone());
 
     let bytes = client
         .download_installer(InstallerQuery { version: "1.1.1" })
@@ -80,9 +80,9 @@ async fn download_installer_builds_url_and_returns_bytes() {
 
 #[tokio::test]
 async fn download_installer_to_reports_progress_and_streams_bytes() {
-    let mock = MockTransport::new();
+    let mock = MockHook::new();
     mock.enqueue_bytes(b"fabric-installer");
-    let client = FabricClient::with_transport(mock.clone());
+    let client = FabricClient::with_hook(mock.clone());
     let mut collected = Vec::new();
 
     let (content_length, downloaded) = client
@@ -100,7 +100,7 @@ async fn download_installer_to_reports_progress_and_streams_bytes() {
 #[tokio::test]
 async fn download_installer_reports_missing_version() {
     let mock = error_mock(404);
-    let client = FabricClient::with_transport(mock);
+    let client = FabricClient::with_hook(mock);
 
     let error = client
         .download_installer(InstallerQuery {

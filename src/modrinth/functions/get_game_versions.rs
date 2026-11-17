@@ -12,6 +12,6 @@ impl ModrinthClient {
     /// Returns [`ApiError::Http`] if the request or parsing fails.
     pub async fn get_game_versions(&self) -> Result<Vec<GameVersion>, ApiError> {
         let url = format!("{BASE}/tag/game_version");
-        http::get_json(self.transport.as_ref(), &url, &[]).await
+        http::get_json(self.hook.as_ref(), &url, &[]).await
     }
 }

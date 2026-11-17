@@ -1,32 +1,32 @@
 use serde::de::DeserializeOwned;
 
-use crate::{error::ApiError, transport::Transport};
+use crate::{error::ApiError, hook::HttpHook};
 
 pub(crate) async fn get_json<T: DeserializeOwned>(
-    transport: &dyn Transport,
+    hook: &dyn HttpHook,
     url: &str,
     query: &[(&str, String)],
 ) -> Result<T, ApiError> {
-    let response = transport.get(url, query).await?.error_for_status()?;
+    let response = hook.get(url, query).await?.error_for_status()?;
     Ok(response.json().await?)
 }
 
 pub(crate) async fn get_bytes(
-    transport: &dyn Transport,
+    hook: &dyn HttpHook,
     url: &str,
     query: &[(&str, String)],
 ) -> Result<Vec<u8>, ApiError> {
-    let response = transport.get(url, query).await?.error_for_status()?;
+    let response = hook.get(url, query).await?.error_for_status()?;
     Ok(response.bytes().await?.to_vec())
 }
 
 pub(crate) async fn get_stream<F: FnMut(&[u8])>(
-    transport: &dyn Transport,
+    hook: &dyn HttpHook,
     url: &str,
     query: &[(&str, String)],
     mut on_chunk: F,
 ) -> Result<(Option<u64>, u64), ApiError> {
-    let mut response = transport.get(url, query).await?.error_for_status()?;
+    let mut response = hook.get(url, query).await?.error_for_status()?;
     let content_length = response.content_length();
     let mut downloaded = 0u64;
 

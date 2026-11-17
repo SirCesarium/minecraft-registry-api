@@ -4,7 +4,7 @@ mod support;
 
 use minecraft_registry_api::purpur::PurpurClient;
 use minecraft_registry_api::purpur::models::{BuildDownload, VersionQuery};
-use support::{MockTransport, assert_http_error, body_mock, error_mock};
+use support::{MockHook, assert_http_error, body_mock, error_mock};
 
 const PROJECT: &str = include_str!("fixtures/purpur/project.json");
 const VERSION: &str = include_str!("fixtures/purpur/version.json");
@@ -13,7 +13,7 @@ const BUILD: &str = include_str!("fixtures/purpur/build.json");
 #[tokio::test]
 async fn get_project_builds_url_and_maps_response() {
     let mock = body_mock(PROJECT);
-    let client = PurpurClient::with_transport(mock.clone());
+    let client = PurpurClient::with_hook(mock.clone());
 
     let project = client.get_project().await.unwrap();
 
@@ -29,7 +29,7 @@ async fn get_project_builds_url_and_maps_response() {
 #[tokio::test]
 async fn get_version_builds_url_and_maps_response() {
     let mock = body_mock(VERSION);
-    let client = PurpurClient::with_transport(mock.clone());
+    let client = PurpurClient::with_hook(mock.clone());
 
     let version = client
         .get_version(VersionQuery { version: "1.21.4" })
@@ -47,7 +47,7 @@ async fn get_version_builds_url_and_maps_response() {
 #[tokio::test]
 async fn get_build_builds_url_and_maps_response() {
     let mock = body_mock(BUILD);
-    let client = PurpurClient::with_transport(mock.clone());
+    let client = PurpurClient::with_hook(mock.clone());
 
     let build = client.get_build("1.21.4", "2416").await.unwrap();
 
@@ -64,9 +64,9 @@ async fn get_build_builds_url_and_maps_response() {
 
 #[tokio::test]
 async fn download_build_builds_url_and_returns_bytes() {
-    let mock = MockTransport::new();
+    let mock = MockHook::new();
     mock.enqueue_bytes(b"purpur-jar");
-    let client = PurpurClient::with_transport(mock.clone());
+    let client = PurpurClient::with_hook(mock.clone());
 
     let bytes = client
         .download_build(BuildDownload {
@@ -85,9 +85,9 @@ async fn download_build_builds_url_and_returns_bytes() {
 
 #[tokio::test]
 async fn download_build_to_reports_progress_and_streams_bytes() {
-    let mock = MockTransport::new();
+    let mock = MockHook::new();
     mock.enqueue_bytes(b"purpur-jar");
-    let client = PurpurClient::with_transport(mock.clone());
+    let client = PurpurClient::with_hook(mock.clone());
     let mut collected = Vec::new();
 
     let (content_length, downloaded) = client
@@ -109,7 +109,7 @@ async fn download_build_to_reports_progress_and_streams_bytes() {
 #[tokio::test]
 async fn get_version_reports_missing_version() {
     let mock = error_mock(404);
-    let client = PurpurClient::with_transport(mock);
+    let client = PurpurClient::with_hook(mock);
 
     let error = client
         .get_version(VersionQuery { version: "999.999" })

@@ -9,10 +9,10 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use minecraft_registry_api::{error::ApiError, transport::Transport};
+use minecraft_registry_api::{error::ApiError, hook::HttpHook};
 use reqwest::{Response, StatusCode};
 
-pub(crate) struct MockTransport {
+pub(crate) struct MockHook {
     inner: Mutex<Inner>,
 }
 
@@ -42,7 +42,7 @@ impl RecordedRequest {
     }
 }
 
-impl MockTransport {
+impl MockHook {
     pub(crate) fn new() -> Arc<Self> {
         Arc::new(Self {
             inner: Mutex::new(Inner::default()),
@@ -85,7 +85,7 @@ impl MockTransport {
     }
 }
 
-impl Transport for MockTransport {
+impl HttpHook for MockHook {
     fn get<'a>(
         &'a self,
         url: &'a str,
@@ -118,15 +118,15 @@ impl Transport for MockTransport {
     }
 }
 
-pub(crate) fn body_mock(body: &str) -> Arc<MockTransport> {
-    let mock = MockTransport::new();
+pub(crate) fn body_mock(body: &str) -> Arc<MockHook> {
+    let mock = MockHook::new();
     mock.enqueue_json(body);
 
     mock
 }
 
-pub(crate) fn error_mock(status: u16) -> Arc<MockTransport> {
-    let mock = MockTransport::new();
+pub(crate) fn error_mock(status: u16) -> Arc<MockHook> {
+    let mock = MockHook::new();
     mock.enqueue_error(status);
 
     mock

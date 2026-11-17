@@ -19,7 +19,7 @@ impl PaperClient {
         version: &str,
     ) -> Result<PaperVersion, ApiError> {
         let url = format!("{BASE}/projects/{project}/versions/{version}");
-        http::get_json(self.transport.as_ref(), &url, &[]).await
+        http::get_json(self.hook.as_ref(), &url, &[]).await
     }
 
     /// Fetches builds for a version filtered by channel (e.g. "STABLE", "ALPHA", "BETA").
@@ -36,6 +36,6 @@ impl PaperClient {
         let url = format!("{BASE}/projects/{project}/versions/{version}/builds");
         let query = [("channel", channel.to_owned())];
 
-        http::get_json(self.transport.as_ref(), &url, &query).await
+        http::get_json(self.hook.as_ref(), &url, &query).await
     }
 }

@@ -15,6 +15,6 @@ impl PaperClient {
     /// Returns [`ApiError::Http`] if the request or parsing fails.
     pub async fn get_project(&self, params: ProjectQuery<'_>) -> Result<PaperProject, ApiError> {
         let url = format!("{BASE}/projects/{}", params.project);
-        http::get_json(self.transport.as_ref(), &url, &[]).await
+        http::get_json(self.hook.as_ref(), &url, &[]).await
     }
 }

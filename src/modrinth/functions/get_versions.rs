@@ -18,6 +18,6 @@ impl ModrinthClient {
         params: VersionListQuery<'_>,
     ) -> Result<Vec<Version>, ApiError> {
         let url = format!("{BASE}/project/{}/version", params.project_id);
-        http::get_json(self.transport.as_ref(), &url, &[]).await
+        http::get_json(self.hook.as_ref(), &url, &[]).await
     }
 }

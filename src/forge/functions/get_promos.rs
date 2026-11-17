@@ -11,6 +11,6 @@ impl ForgeClient {
     ///
     /// Returns [`ApiError::Http`] if the request or parsing fails.
     pub async fn get_promos(&self) -> Result<ForgePromos, ApiError> {
-        http::get_json(self.transport.as_ref(), PROMO_URL, &[]).await
+        http::get_json(self.hook.as_ref(), PROMO_URL, &[]).await
     }
 }
