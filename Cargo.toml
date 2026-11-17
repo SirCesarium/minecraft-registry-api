@@ -2,8 +2,15 @@
 name = "minecraft_registry_api"
 version = "2.0.1"
 edition = "2024"
+rust-version = "1.99"
 description = "Typed API clients for Minecraft modding platforms — Modrinth, Mojang, Paper, Purpur, Fabric, Forge, NeoForge"
 license = "MIT"
+authors = ["Cesarium <239650612+SirCesarium@users.noreply.github.com>"]
+readme = "README.md"
+repository = "https://github.com/SirCesarium/minecraft-registry-api"
+documentation = "https://docs.rs/minecraft_registry_api"
+keywords = ["minecraft", "modrinth", "api-client", "modding"]
+categories = ["api-bindings", "games"]
 
 [dependencies]
 reqwest = { version = "0.13", default-features = false, features = ["json", "query", "rustls"] }
