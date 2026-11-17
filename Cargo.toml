@@ -11,7 +11,6 @@ serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 thiserror = "2"
 quick-xml = { version = "0.42", features = ["serialize"], optional = true }
-tokio = { version = "1", features = ["rt", "macros"] }
 
 [features]
 default = ["modrinth", "mojang"]
@@ -28,6 +27,7 @@ neoforge = ["quick-xml"]
 [dev-dependencies]
 # Builds reqwest::Response values in the test HTTP hook.
 http = "1.5"
+tokio = { version = "1", features = ["rt", "macros"] }
 
 [[test]]
 name = "fabric"
