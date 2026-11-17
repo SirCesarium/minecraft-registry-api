@@ -25,11 +25,6 @@ fabric = []
 forge = ["quick-xml"]
 neoforge = ["quick-xml"]
 
-[lib]
-name = "minecraft_registry_api"
-path = "src/lib.rs"
-crate-type = ["lib", "cdylib", "staticlib"]
-
 [dev-dependencies]
 # Builds reqwest::Response values in the test HTTP hook.
 http = "1.5"
@@ -68,7 +63,4 @@ pedantic = "deny"
 unwrap_used = "deny"
 expect_used = "deny"
 absolute_paths = "deny"
-
-[build-dependencies]
-cbindgen = "0.29.3"
 
