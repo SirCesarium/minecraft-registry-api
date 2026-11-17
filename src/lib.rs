@@ -15,6 +15,8 @@ pub mod paper;
 pub mod purpur;
 
 pub mod ffi;
+// Public for the integration tests, hidden from the crate docs.
+#[doc(hidden)]
 pub mod hook;
 
 #[cfg(any(

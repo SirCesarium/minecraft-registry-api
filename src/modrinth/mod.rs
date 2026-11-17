@@ -20,6 +20,7 @@ impl ModrinthClient {
     }
 
     /// Builds a client with a custom HTTP hook. Intended for tests.
+    #[doc(hidden)]
     #[must_use]
     pub fn with_hook(hook: Arc<dyn HttpHook>) -> Self {
         Self { hook }
