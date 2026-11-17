@@ -1,103 +1,17 @@
+<div align="center">
+
 # minecraft-registry-api
 
+**Typed Rust clients for the Minecraft modding and server APIs**
+
 [![Crates.io](https://img.shields.io/crates/v/minecraft_registry_api?style=flat-square)](https://crates.io/crates/minecraft_registry_api)
+[![docs.rs](https://img.shields.io/docsrs/minecraft_registry_api?style=flat-square)](https://docs.rs/minecraft_registry_api)
 [![CI](https://img.shields.io/github/actions/workflow/status/SirCesarium/minecraft-registry-api/ci.yml?branch=main&style=flat-square)](https://github.com/SirCesarium/minecraft-registry-api/actions)
-[![License](https://img.shields.io/github/license/SirCesarium/minecraft-registry-api?style=flat-square)]()
+[![License](https://img.shields.io/github/license/SirCesarium/minecraft-registry-api?style=flat-square)](LICENSE)
 
-Typed API clients for Minecraft modding platforms — Modrinth, Mojang, Paper, Purpur, Fabric, Forge, NeoForge.
+</div>
 
-```rust
-use minecraft_registry_api::modrinth::ModrinthClient;
-use minecraft_registry_api::modrinth::models::{Facet, SearchQuery};
-
-let client = ModrinthClient::new(reqwest::Client::new());
-let result = client.search(SearchQuery { query: "sodium", limit: 10, offset: 0, facets: None }).await?;
-println!("{} hits", result.total_hits);
-
-// Faceted search
-use Facet::{ProjectType, Category};
-let facets = vec![vec![ProjectType(ProjectType::Mod), Category("performance".into())]];
-let result = client.search(SearchQuery { query: "", limit: 10, offset: 0, facets: Some(facets) }).await?;
-```
-
-```rust
-use minecraft_registry_api::mojang::MojangClient;
-
-let client = MojangClient::new(reqwest::Client::new());
-let manifest = client.get_manifest().await?;
-let latest = manifest.versions.iter()
-    .find(|v| v.id == manifest.latest.release)
-    .unwrap();
-```
-
-```rust
-use minecraft_registry_api::forge::{ForgeClient, models::InstallerQuery};
-
-let client = ForgeClient::new(reqwest::Client::new());
-let promos = client.get_promos().await?;
-let jar = client.download_installer(InstallerQuery { mc_version: "1.21.4", forge_version: "54.1.16" }).await?;
-```
-
-## APIs
-
-Each API is behind an optional Cargo feature:
-
-| Feature | Module | Client | Methods |
-|---------|--------|--------|---------|
-| `modrinth` | `modrinth` | `ModrinthClient` | `search`, `get_project`, `get_versions`, `get_version`, `get_loaders`, `get_game_versions` |
-| `mojang` | `mojang` | `MojangClient` | `get_manifest`, `download` |
-| `paper` | `paper` | `PaperClient` | `get_project`, `get_build`, `download_build` |
-| `purpur` | `purpur` | `PurpurClient` | `get_project`, `get_version`, `download_build` |
-| `fabric` | `fabric` | `FabricClient` | `get_game_versions`, `get_loaders`, `get_installer_versions`, `download_installer` |
-| `forge` | `forge` | `ForgeClient` | `get_promos`, `download_installer` |
-| `neoforge` | `neoforge` | `NeoForgeClient` | `get_metadata`, `download_installer` |
-
-```toml
-# Default: modrinth + mojang
-cargo add minecraft_registry_api
-
-# Single API
-cargo add minecraft_registry_api --no-default-features --features paper
-
-# All APIs
-cargo add minecraft_registry_api --features full
-```
-
-### Modrinth facets
-
-`ModrinthClient::search` accepts facets — typed filters that narrow results:
-
-```rust
-use minecraft_registry_api::modrinth::models::{Facet, ProjectType, Side};
-
-let facets = vec![vec![
-    Facet::ProjectType(ProjectType::Modpack),
-    Facet::Category("technology".into()),
-    Facet::Loader("fabric".into()),
-    Facet::GameVersion("1.21.4".into()),
-    Facet::ClientSide(Side::Required),
-    Facet::ServerSide(Side::Required),
-    Facet::OpenSource(true),
-    Facet::License("MIT".into()),
-    Facet::Author("CaffeineMC".into()),
-    Facet::Custom("key".into(), "value".into()),
-]];
-```
-
-Multiple facets in the same inner `Vec` are OR'd. Multiple inner `Vec`s are AND'd.
-
-### Models
-
-Models map 1:1 to each API's JSON. There is no unified domain model — that belongs in the consumer. Each `models.rs` module exposes the raw serde structs.
-
-### Error handling
-
-All methods return `Result<T, minecraft_registry_api::error::ApiError>`:
-
-- `ApiError::Http(reqwest::Error)` — request failed or returned a non-2xx status
-- `ApiError::Xml(quick_xml::de::DeError)` — XML deserialization (forge, neoforge)
-
-`ApiError` implements `From<reqwest::Error>` and `std::error::Error`.
+`minecraft-registry-api` is a Rust library with typed clients for Modrinth, Mojang, Paper, Purpur, Fabric, Forge and NeoForge. Each module returns the platform's own JSON structs, so every response maps 1:1 to the upstream API.
 
 ## Install
 
@@ -105,22 +19,126 @@ All methods return `Result<T, minecraft_registry_api::error::ApiError>`:
 cargo add minecraft_registry_api
 ```
 
-Then enable the features you need (modrinth and mojang are on by default).
+The clients take a `reqwest::Client` you own and return futures that run on your runtime:
 
-## Tests
-
-The suite is hermetic. Clients accept an `HttpHook` that replaces the HTTP
-call, so tests run against canned responses without network access or a local
-server. Fixtures live in `tests/fixtures`.
-
-```bash
-cargo test              # default features
-cargo test --all-features
+```toml
+[dependencies]
+minecraft_registry_api = "2"
+reqwest = "0.13"
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 ```
 
-The hook is a testing seam; production code uses `reqwest::Client`. Clippy runs
-on all targets and denies `unwrap_used` / `expect_used` across the library;
-test code allows them explicitly.
+## Quickstart
+
+```rust
+use minecraft_registry_api::error::ApiError;
+use minecraft_registry_api::modrinth::ModrinthClient;
+use minecraft_registry_api::modrinth::models::{Facet, ProjectType, SearchQuery};
+
+#[tokio::main]
+async fn main() -> Result<(), ApiError> {
+    let client = ModrinthClient::new(reqwest::Client::new());
+
+    let facets = vec![vec![
+        Facet::ProjectType(ProjectType::Mod),
+        Facet::Category("performance".into()),
+    ]];
+
+    let result = client
+        .search(SearchQuery {
+            query: "",
+            limit: 10,
+            offset: 0,
+            facets: Some(facets),
+        })
+        .await?;
+
+    println!("{} hits", result.total_hits);
+
+    Ok(())
+}
+```
+
+`modrinth` and `mojang` are enabled by default. The other platforms need their feature, listed in [Cargo features](#cargo-features).
+
+## APIs
+
+Each feature has the same name as its module, and every client is built with `new(reqwest::Client)`.
+
+| Feature | Client | Methods |
+| --- | --- | --- |
+| `modrinth` | `ModrinthClient` | `search`, `get_project`, `get_versions`, `get_version`, `get_loaders`, `get_game_versions` |
+| `mojang` | `MojangClient` | `get_manifest`, `download` |
+| `paper` | `PaperClient` | `get_project`, `get_version`, `get_builds_by_channel`, `get_build`, `download_build` |
+| `purpur` | `PurpurClient` | `get_project`, `get_version`, `get_build`, `download_build` |
+| `fabric` | `FabricClient` | `get_game_versions`, `get_loaders`, `get_installer_versions`, `download_installer` |
+| `forge` | `ForgeClient` | `get_promos`, `download_installer` |
+| `neoforge` | `NeoForgeClient` | `get_metadata`, `download_installer` |
+
+Every download method has a `_to` variant that passes each chunk to a closure and returns `(content_length, total_downloaded)`.
+
+## Cargo features
+
+| Feature | Default | Adds |
+| --- | --- | --- |
+| `modrinth` | yes | Modrinth client |
+| `mojang` | yes | Mojang client |
+| `paper` | no | Paper client |
+| `purpur` | no | Purpur client |
+| `fabric` | no | Fabric client |
+| `forge` | no | Forge client |
+| `neoforge` | no | NeoForge client |
+| `full` | no | Every client |
+
+```bash
+# A single platform
+cargo add minecraft_registry_api --no-default-features --features paper
+
+# All seven
+cargo add minecraft_registry_api --features full
+```
+
+## Facets
+
+`ModrinthClient::search` accepts typed facets in `SearchQuery::facets`. Facets in the same inner `Vec` are OR'd, and separate inner `Vec`s are AND'd.
+
+| Facet | Sent as |
+| --- | --- |
+| `ProjectType(ProjectType)` | `project_type:<value>` |
+| `Category(String)` | `categories:<value>` |
+| `Loader(String)` | `loaders:<value>` |
+| `GameVersion(String)` | `game_versions:<value>` |
+| `ClientSide(Side)` | `client_side:<value>` |
+| `ServerSide(Side)` | `server_side:<value>` |
+| `OpenSource(bool)` | `open_source:<value>` |
+| `License(String)` | `license:<value>` |
+| `Author(String)` | `author:<value>` |
+| `Custom(String, String)` | `<key>:<value>` |
+
+`ProjectType` covers `Mod`, `Modpack`, `Plugin`, `Datapack`, `ResourcePack` and `Shader`. `Side` covers `Required`, `Optional` and `Unsupported`.
+
+## Models
+
+Each `models.rs` module exposes the serde structs of its API. There is no unified domain model; each response maps to the platform's own fields.
+
+## Errors
+
+Every client method returns `Result<T, ApiError>`.
+
+| Variant | When |
+| --- | --- |
+| `ApiError::Http(reqwest::Error)` | The request fails, returns a non-2xx status, or the JSON body does not deserialize. |
+| `ApiError::Msg(String)` | The API response cannot satisfy the request, such as a Paper build without a `server:default` artifact. |
+| `ApiError::Xml(String)` | NeoForge metadata cannot be parsed. |
+
+## Development
+
+```bash
+cargo test --all-features
+cargo clippy --all-features --all-targets -- -D warnings
+```
+
+The suite runs without network access. Tests inject canned responses through the `hook` test module, and fixtures live in `tests/fixtures`.
 
 ## License
 
